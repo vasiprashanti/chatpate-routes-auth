@@ -174,16 +174,23 @@ function TripCard({ trip, index }: { trip: Trip; index: number }) {
                 <strong>{trip.duration}</strong>
               </div>
             </div>
-            <div className="trips-trip-bottom">
-              <span className="trips-view-details">Explore Trip</span>
-              <div className="trips-trip-price">
-                <span>Starting from</span>
-                <strong>{trip.price}</strong>
-              </div>
-            </div>
           </div>
         </div>
       </Link>
+      <div className="trips-trip-actions">
+        <div className="trips-trip-bottom">
+          <Link to="/trip-detail" search={{ trip: trip.id }} className="trips-view-details">
+            Explore Trip
+          </Link>
+          <div className="trips-trip-price">
+            <span>Starting from</span>
+            <strong>{trip.price}</strong>
+          </div>
+        </div>
+        <a className="trips-card-book-btn" href={`/booking?trip=${encodeURIComponent(trip.id)}`}>
+          Book Now <span aria-hidden="true">→</span>
+        </a>
+      </div>
     </article>
   );
 }

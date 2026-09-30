@@ -6,5 +6,5 @@ export const Route = createFileRoute("/admin/trips/new")({
 });
 
 function AdminNewTripRoute() {
-  return <AdminTripEditor tripId="new" />;
+  return <AdminTripEditor tripId="new" initialSection={undefined} />;
 }

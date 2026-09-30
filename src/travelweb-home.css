@@ -1,8 +1,6 @@
 
 *{
 box-sizing:border-box;
-margin:0;
-padding:0;
 }
 
 :root{
@@ -1506,6 +1504,7 @@ body.menu-open {
 
   .stamp {
     width: 80%;
+    margin-inline: auto;
     aspect-ratio: 3 / 4;
   }
 

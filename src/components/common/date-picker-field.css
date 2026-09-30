@@ -120,6 +120,15 @@
 }
 
 @media (max-width: 650px) {
+  .date-picker-field--compact .date-picker-text,
+  .date-picker-field--compact .date-picker-native {
+    height: 42px;
+  }
+
+  .date-picker-field--compact .date-picker-native {
+    width: 42px;
+  }
+
   .date-picker-field--hero {
     flex-basis: auto;
     width: 100%;

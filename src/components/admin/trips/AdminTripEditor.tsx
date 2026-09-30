@@ -35,6 +35,7 @@ type TripImage = {
 
 type AdminTripEditorProps = {
   tripId: string;
+  initialSection: "bookings" | undefined;
 };
 
 type SavedTrip = {
@@ -123,6 +124,7 @@ async function optimizeImage(file: File) {
 }
 
 const sections: { id: Section; label: string }[] = [
+  { id: "bookings", label: "Bookings" },
   { id: "overview", label: "Overview" },
   { id: "itinerary", label: "Itinerary" },
   { id: "stay", label: "Stay" },
@@ -130,14 +132,14 @@ const sections: { id: Section; label: string }[] = [
   { id: "packing", label: "What to Bring" },
   { id: "rules", label: "Rules" },
   { id: "faq", label: "FAQ" },
-  { id: "bookings", label: "Bookings" },
 ];
 
 export default function AdminTripEditor({
   tripId,
+  initialSection,
 }: AdminTripEditorProps) {
   const [activeSection, setActiveSection] =
-    useState<Section>("overview");
+    useState<Section>(initialSection ?? "overview");
   const [backendTripId, setBackendTripId] = useState<string | null>(
   tripId === "new" ? null : tripId,
   );
@@ -1142,7 +1144,6 @@ const publishTrip = async () => {
 
         {/* EDITOR */}
 
-{activeSection === "bookings" && (
   <div className="admin-bookings-top-stats">
     <div className="admin-booking-stat-card">
       <div className="admin-booking-stat-content">
@@ -1208,7 +1209,6 @@ const publishTrip = async () => {
       </div>
     </div>
   </div>
-)}
 
 <section className="admin-editor-card">
 
@@ -2050,15 +2050,17 @@ const publishTrip = async () => {
             )}
             {/* BOOKINGS */}
 
-            {activeSection === "bookings" && (
-            <section className="admin-form-section admin-bookings-form-section">
+            <section
+              className="admin-form-section admin-bookings-form-section"
+              style={{ display: activeSection === "bookings" ? "" : "none" }}
+              aria-hidden={activeSection !== "bookings"}
+            >
                 <AdminTripBookings
                 tripId={tripId}
                 tripPrice={Number(price) || 8999}
                 onStatsChange={setBookingStats}
                 />
             </section>
-            )}
           </div>
         </section>
       </div>

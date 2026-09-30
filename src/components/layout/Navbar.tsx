@@ -30,12 +30,21 @@ const navItems = [
 export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [account, setAccount] = useState<AccountState>({ status: "loading" });
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState("");
   const accountMenuRef = useRef<HTMLLIElement>(null);
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  useEffect(() => {
+    const updateScrollState = () => setIsScrolled(window.scrollY > 12);
+
+    updateScrollState();
+    window.addEventListener("scroll", updateScrollState, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollState);
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -148,11 +157,18 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
   const isSignedIn = account.status === "signed-in";
   const email = isSignedIn ? account.email : "";
   const isAdmin = isSignedIn && account.role === "admin";
+  const mobileNavItems = [
+    ...navItems,
+    ...(isSignedIn ? [{ href: "/dashboard/bookings", label: "My Bookings", num: "04" }] : []),
+    ...(isAdmin ? [{ href: "/admin/trips", label: "Admin", num: "05" }] : []),
+  ];
 
   return (
     <>
       <nav
-        className={`navbar${variant === "light" ? " navbar-light" : ""}`}
+        className={`navbar global-site-navbar${
+          variant === "light" ? " navbar-light" : ""
+        }${isScrolled ? " navbar-scrolled" : ""}`}
         aria-label="Main navigation"
       >
         <a href="/" className="nav-brand" onClick={closeMenu}>
@@ -275,11 +291,11 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
         </div>
 
         <div className="mobile-menu-links">
-          {navItems.map((item) => (
+          {mobileNavItems.map((item) => (
             <a
-              key={item.href}
+              key={item.num}
               href={item.href}
-              className={activePage === item.page ? "active" : undefined}
+              className={"page" in item && activePage === item.page ? "active" : undefined}
               onClick={closeMenu}
             >
               <span>{item.num}</span>
@@ -288,38 +304,6 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
           ))}
         </div>
 
-        {account.status !== "signed-out" ? (
-          <div className="mobile-account" aria-live="polite">
-            {account.status === "loading" ? (
-              <p className="mobile-account-status">Checking account…</p>
-            ) : account.status === "unavailable" ? (
-              <p className="mobile-account-status">Account status unavailable</p>
-            ) : (
-              <>
-                <p className="mobile-account-email">
-                  {isAdmin ? "Admin account" : "Signed in as"}
-                  <strong>{email}</strong>
-                </p>
-                <a href="/dashboard/bookings" onClick={closeMenu}>
-                  My Bookings
-                </a>
-                {isAdmin ? (
-                  <a href="/admin/trips" onClick={closeMenu}>
-                    Admin
-                  </a>
-                ) : account.role === "checking" ? (
-                  <span className="mobile-account-status">
-                    Checking admin access…
-                  </span>
-                ) : null}
-                <button type="button" onClick={signOut} disabled={isSigningOut}>
-                  {isSigningOut ? "Signing out…" : "Sign out"}
-                </button>
-              </>
-            )}
-          </div>
-        ) : null}
-
         <a
           href={isSignedIn ? "/trips" : LOGIN_HREF}
           className="mobile-menu-cta"
@@ -327,6 +311,16 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
         >
           {isSignedIn ? "BROWSE TRIPS" : "Login"}
         </a>
+        {isSignedIn ? (
+          <button
+            type="button"
+            className="mobile-menu-logout"
+            onClick={signOut}
+            disabled={isSigningOut}
+          >
+            {isSigningOut ? "Logging out…" : "Logout"}
+          </button>
+        ) : null}
         {signOutError ? (
           <p className="nav-auth-error" role="alert">
             {signOutError}

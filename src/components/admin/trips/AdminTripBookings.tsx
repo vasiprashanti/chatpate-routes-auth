@@ -166,7 +166,7 @@ export default function AdminTripBookings({
     } finally {
       setLoading(false);
     }
-  }, [onStatsChange, tripId]);
+  }, [onStatsChange, tripId, tripPrice]);
 
   useEffect(() => {
     loadBookings();

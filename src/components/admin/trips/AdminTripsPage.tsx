@@ -1,7 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import {
+  Archive,
+  BookOpen,
+  CalendarDays,
+  Eye,
+  FileText,
+  Map,
+  Pencil,
+} from "lucide-react";
 import "./admin-trips.css";
 import { supabase } from "@/integerations/supabase/client";
+import unpublishIcon from "@/assets/unpublish.png";
 
 type TripStatus = "Published" | "Draft" | "Archived";
 
@@ -21,9 +31,20 @@ type Trip = {
   title: string;
   destination: string;
   dates: string;
+  startDate: string | null;
+  endDate: string | null;
   price: number;
   seats: number;
   status: TripStatus;
+};
+
+const getLocalDateKey = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
 
 export default function AdminTripsPage() {
@@ -32,6 +53,7 @@ export default function AdminTripsPage() {
   const [statusFilter, setStatusFilter] =
     useState<"All" | TripStatus>("All");
   const [isLoading, setIsLoading] = useState(true);
+  const [today, setToday] = useState(getLocalDateKey);
 
   const formatStatus = (
     status: BackendTrip["status"],
@@ -96,6 +118,8 @@ export default function AdminTripsPage() {
           trip.start_date,
           trip.end_date,
         ),
+        startDate: trip.start_date,
+        endDate: trip.end_date,
         price: Number(trip.price) || 0,
         seats: Number(trip.capacity) || 0,
         status: formatStatus(trip.status),
@@ -118,6 +142,49 @@ export default function AdminTripsPage() {
   useEffect(() => {
     loadTrips();
   }, []);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setToday(getLocalDateKey());
+    }, 60_000);
+
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const tripStats = useMemo(() => {
+    const activeUpcoming = trips.filter(
+      (trip) =>
+        trip.status === "Published" &&
+        (!trip.endDate || trip.endDate.slice(0, 10) >= today),
+    ).length;
+
+    return [
+      {
+        label: "Total Trips",
+        value: trips.length,
+        icon: Map,
+        tone: "total",
+      },
+      {
+        label: "Active / Upcoming Trips",
+        value: activeUpcoming,
+        icon: CalendarDays,
+        tone: "active",
+      },
+      {
+        label: "Draft Trips",
+        value: trips.filter((trip) => trip.status === "Draft").length,
+        icon: FileText,
+        tone: "draft",
+      },
+      {
+        label: "Archived Trips",
+        value: trips.filter((trip) => trip.status === "Archived").length,
+        icon: Archive,
+        tone: "archived",
+      },
+    ];
+  }, [today, trips]);
 
   const filteredTrips = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -222,6 +289,26 @@ export default function AdminTripsPage() {
             Create Trip
           </Link>
         </header>
+
+        <section
+          className="admin-trip-stats"
+          aria-label="Trip statistics"
+        >
+          {tripStats.map(({ label, value, icon: Icon, tone }) => (
+            <article
+              className={`admin-trip-stat-card admin-trip-stat-${tone}`}
+              key={label}
+            >
+              <div className="admin-trip-stat-copy">
+                <p>{label}</p>
+                <strong>{isLoading ? "—" : value}</strong>
+              </div>
+              <span className="admin-trip-stat-icon" aria-hidden="true">
+                <Icon size={19} />
+              </span>
+            </article>
+          ))}
+        </section>
 
         <section className="admin-toolbar">
           <div className="admin-search">
@@ -341,9 +428,11 @@ export default function AdminTripsPage() {
                             search={{
                               trip: trip.id,
                             }}
-                            className="admin-action admin-action-view"
+                            className="admin-action admin-action-icon admin-action-view"
+                            aria-label={`View ${trip.title}`}
+                            title={`View ${trip.title}`}
                           >
-                            View
+                            <Eye size={16} aria-hidden="true" />
                           </Link>
 
                           <Link
@@ -351,9 +440,26 @@ export default function AdminTripsPage() {
                             params={{
                               tripId: trip.id,
                             }}
-                            className="admin-action"
+                            search={{}}
+                            className="admin-action admin-action-icon"
+                            aria-label={`Edit ${trip.title}`}
+                            title={`Edit ${trip.title}`}
                           >
-                            Edit
+                            <Pencil size={16} aria-hidden="true" />
+                          </Link>
+
+                          <Link
+                            to="/admin/trips/$tripId/edit"
+                            params={{
+                              tripId: trip.id,
+                            }}
+                            search={{ section: "bookings" }}
+                            className="admin-action admin-action-bookings"
+                            aria-label={`Open bookings for ${trip.title}`}
+                            title={`Open bookings for ${trip.title}`}
+                          >
+                            <BookOpen size={15} aria-hidden="true" />
+                            <span>Bookings</span>
                           </Link>
 
                           {trip.status !==
@@ -361,14 +467,35 @@ export default function AdminTripsPage() {
                             <>
                               <button
                                 type="button"
-                                className="admin-action"
+                                className={
+                                  trip.status === "Published"
+                                    ? "admin-action admin-action-icon"
+                                    : "admin-action"
+                                }
                                 onClick={() =>
                                   togglePublish(trip)
+                                }
+                                aria-label={
+                                  trip.status === "Published"
+                                    ? `Unpublish ${trip.title}`
+                                    : `Publish ${trip.title}`
+                                }
+                                title={
+                                  trip.status === "Published"
+                                    ? "Unpublish"
+                                    : "Publish"
                                 }
                               >
                                 {trip.status ===
                                 "Published"
-                                  ? "Unpublish"
+                                  ? <span
+                                      className="admin-action-unpublish-icon"
+                                      style={{
+                                        maskImage: `url("${unpublishIcon}")`,
+                                        WebkitMaskImage: `url("${unpublishIcon}")`,
+                                      }}
+                                      aria-hidden="true"
+                                    />
                                   : "Publish"}
                               </button>
 

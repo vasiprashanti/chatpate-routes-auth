@@ -1065,8 +1065,8 @@ body.menu-open {
   }
 
   .trip-arrow {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     font-size: 16px;
   }
 
@@ -1119,8 +1119,8 @@ body.menu-open {
   }
 
   .trip-arrow {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
   }
 
   .trip-card {
@@ -1541,6 +1541,7 @@ body.menu-open {
 
   .stamp {
     width: 80%;
+    margin-inline: auto;
     aspect-ratio: 3 / 4;
   }
 
@@ -3530,8 +3531,17 @@ body.booking-open {
 }
 
 @media (max-width: 600px) {
+  .booking-dialog-backdrop {
+    place-items: start center;
+    padding: max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+  }
+
   .booking-dialog {
     padding: 24px 18px;
+    margin-block: auto;
   }
 
   .booking-form {

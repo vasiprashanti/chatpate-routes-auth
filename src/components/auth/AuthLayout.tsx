@@ -28,7 +28,7 @@ export function AuthLayout({
   return (
     <main className="flex min-h-[100svh] items-stretch justify-center bg-[#faf7ef] md:items-center md:p-6">
       <div className="flex min-h-[100svh] w-full max-w-[1480px] flex-col overflow-hidden bg-card shadow-[0_20px_40px_oklch(0_0_0_/_0.08)] md:min-h-0 md:h-[min(820px,calc(100vh-3rem))] md:flex-row md:rounded-[36px]">
-        <div className="relative h-[40svh] min-h-[250px] max-h-[410px] shrink-0 md:hidden">
+        <div className="relative h-[58svh] min-h-[320px] max-h-[520px] shrink-0 md:hidden">
           <AuthImagePanel
             image={image}
             place={place}

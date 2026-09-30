@@ -4,7 +4,10 @@
    RESET
 ========================================================= */
 
-*{
+.booking-page-react,
+.booking-page-react *,
+.booking-page-react *::before,
+.booking-page-react *::after{
   margin:0;
   padding:0;
   box-sizing:border-box;
@@ -466,6 +469,10 @@
   align-self: start;
 }
 
+.booking-page-react .booking-summary-mobile{
+  display:none;
+}
+
 .booking-page-react .summary-card{
   overflow:hidden;
 
@@ -495,6 +502,15 @@
   height:100%;
 
   object-fit:cover;
+}
+
+.booking-page-react .summary-image-empty{
+  width:100%;
+  height:100%;
+  min-height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 .booking-page-react .summary-body{
@@ -730,15 +746,26 @@
 ========================================================= */
 
 @media(max-width:900px){
-  .booking-container{
+  .booking-page-react .booking-container{
     grid-template-columns:1fr;
-    gap:35px;
+    gap:28px;
   }
 
-  .booking-summary{
-    position:relative;
+  .booking-page-react .booking-summary{
+    position:static;
     top:auto;
-    order:0;
+    width:100%;
+    max-width:600px;
+    margin:0 auto;
+  }
+
+  .booking-page-react .booking-summary-desktop{
+    display:none;
+  }
+
+  .booking-page-react .booking-summary-mobile{
+    display:block;
+    margin:0 0 28px;
   }
 }
 
@@ -757,7 +784,17 @@
   }
 
   .booking-page-react .booking-page{
-    padding:45px 5% 80px;
+    padding:38px 5% 80px;
+  }
+
+  .booking-page-react .booking-container{
+    gap:24px;
+  }
+
+  .booking-page-react .booking-main,
+  .booking-page-react .booking-summary{
+    width:100%;
+    min-width:0;
   }
 
   .booking-page-react .page-title{
@@ -778,6 +815,13 @@
 
   .booking-page-react .form-grid{
     grid-template-columns:1fr;
+  }
+
+  .booking-page-react .form-group,
+  .booking-page-react .form-input,
+  .booking-page-react .form-select,
+  .booking-page-react .form-textarea{
+    min-width:0;
   }
 
   .booking-page-react .form-group.full{
@@ -837,6 +881,32 @@
     font-size:22px;
   }
 
+  .booking-page-react .booking-page{
+    padding-top:30px;
+  }
+
+  .booking-page-react .summary-row{
+    gap:12px;
+  }
+
+  .booking-page-react .summary-value{
+    max-width:68%;
+    overflow-wrap:anywhere;
+  }
+
+  .booking-page-react .summary-trust{
+    grid-template-columns:1fr;
+  }
+
+  .booking-page-react .payment-box{
+    padding:18px;
+  }
+
+  .booking-page-react .submit-btn{
+    min-height:56px;
+    font-size:15px;
+  }
+
 }
 
 
@@ -846,9 +916,9 @@
 
 @media(prefers-reduced-motion:reduce){
 
-  *,
-  *::before,
-  *::after{
+  .booking-page-react *,
+  .booking-page-react *::before,
+  .booking-page-react *::after{
     transition:none !important;
     scroll-behavior:auto !important;
   }

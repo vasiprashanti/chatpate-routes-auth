@@ -253,7 +253,7 @@ export function TripDetailPage() {
     <div className="trip-detail-page">
       {/* MOBILE BOOKING BAR */}
       <div className="trip-detail-mobile-booking-bar">
-        <div className="trip-mobile-booking-info">
+        <div className="trip-detail-mobile-booking-info">
           <div className="trip-detail-mobile-booking-name">
             {tripData.title}
           </div>
@@ -268,7 +268,7 @@ export function TripDetailPage() {
         </div>
 
         <a
-          className="trip-mobile-book-btn"
+          className="trip-detail-mobile-book-btn"
           href={loginBookingPath}
         >
           Book Now →

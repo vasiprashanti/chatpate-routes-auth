@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import Navbar from "@/components/layout/Navbar";
 import { supabase } from "@/integerations/supabase/client";
 import "./my-bookings.css";
 
@@ -78,11 +79,7 @@ export default function MyBookings() {
     } catch (loadError) {
       console.error("Could not load bookings:", loadError);
       setBookings([]);
-      setError(
-        loadError instanceof Error
-          ? loadError.message
-          : "Could not load your bookings.",
-      );
+      setError(loadError instanceof Error ? loadError.message : "Could not load your bookings.");
     } finally {
       setLoading(false);
     }
@@ -99,111 +96,108 @@ export default function MyBookings() {
   }, [loadBookings]);
 
   return (
-    <main className="my-bookings-page">
-      <div className="my-bookings-container">
-        <div className="my-bookings-header">
-          <div>
-            <p className="my-bookings-eyebrow">Traveller Dashboard</p>
-            <h1>My Bookings</h1>
-            <p>Your bookings are loaded from your Chatpate Routes account.</p>
-          </div>
+    <>
+      <Navbar variant="light" />
+      <main className="my-bookings-page">
+        <div className="my-bookings-container">
+          <div className="my-bookings-header">
+            <div>
+              <p className="my-bookings-eyebrow">Traveller Dashboard</p>
+              <h1>My Bookings</h1>
+              <p>Your bookings are loaded from your Chatpate Routes account.</p>
+            </div>
 
-          <a href="/trips" className="my-bookings-browse-button">
-            Explore Trips
-          </a>
-        </div>
-
-        {loading ? (
-          <section className="my-bookings-empty">
-            <h2>Loading bookings...</h2>
-            <p>We’re getting your latest booking details.</p>
-          </section>
-        ) : error ? (
-          <section className="my-bookings-empty">
-            <h2>Unable to load bookings</h2>
-            <p>{error}</p>
-            <button
-              type="button"
-              className="my-bookings-empty-button"
-              onClick={loadBookings}
-            >
-              Try Again
-            </button>
-          </section>
-        ) : bookings.length === 0 ? (
-          <section className="my-bookings-empty">
-            <div className="my-bookings-empty-icon">✈</div>
-            <h2>No bookings yet</h2>
-            <p>Your bookings will appear here after you complete a booking.</p>
-            <a href="/trips" className="my-bookings-empty-button">
+            <a href="/trips" className="my-bookings-browse-button">
               Explore Trips
             </a>
-          </section>
-        ) : (
-          <section className="my-bookings-list">
-            {bookings.map((booking) => {
-              const bookingStatus = formatStatus(booking.status);
-              const paymentStatus = formatPaymentStatus(booking.payment_status);
-              const tripStart = booking.trip?.start_date || booking.booking_date;
+          </div>
 
-              return (
-                <article className="my-booking-card" key={booking.id}>
-                  <div className="my-booking-card-top">
-                    <div>
-                      <p className="my-booking-label">Booking</p>
-                      <h2>{booking.trip?.title || "Trip booking"}</h2>
-                      <p className="my-booking-reference">{booking.id}</p>
-                    </div>
+          {loading ? (
+            <section className="my-bookings-empty">
+              <h2>Loading bookings...</h2>
+              <p>We’re getting your latest booking details.</p>
+            </section>
+          ) : error ? (
+            <section className="my-bookings-empty">
+              <h2>Unable to load bookings</h2>
+              <p>{error}</p>
+              <button type="button" className="my-bookings-empty-button" onClick={loadBookings}>
+                Try Again
+              </button>
+            </section>
+          ) : bookings.length === 0 ? (
+            <section className="my-bookings-empty">
+              <div className="my-bookings-empty-icon">✈</div>
+              <h2>No bookings yet</h2>
+              <p>Your bookings will appear here after you complete a booking.</p>
+              <a href="/trips" className="my-bookings-empty-button">
+                Explore Trips
+              </a>
+            </section>
+          ) : (
+            <section className="my-bookings-list">
+              {bookings.map((booking) => {
+                const bookingStatus = formatStatus(booking.status);
+                const paymentStatus = formatPaymentStatus(booking.payment_status);
+                const tripStart = booking.trip?.start_date || booking.booking_date;
 
-                    <span
-                      className={`my-booking-status my-booking-status-${bookingStatus.toLowerCase()}`}
-                    >
-                      {bookingStatus}
-                    </span>
-                  </div>
+                return (
+                  <article className="my-booking-card" key={booking.id}>
+                    <div className="my-booking-card-top">
+                      <div>
+                        <p className="my-booking-label">Booking</p>
+                        <h2>{booking.trip?.title || "Trip booking"}</h2>
+                        <p className="my-booking-reference">{booking.id}</p>
+                      </div>
 
-                  <div className="my-booking-details">
-                    <div className="my-booking-detail">
-                      <span>Dates</span>
-                      <strong>
-                        {formatDate(tripStart)}
-                        {booking.trip?.end_date
-                          ? ` – ${formatDate(booking.trip.end_date)}`
-                          : ""}
-                      </strong>
-                    </div>
-
-                    <div className="my-booking-detail">
-                      <span>Travellers</span>
-                      <strong>{booking.number_of_people}</strong>
-                    </div>
-
-                    <div className="my-booking-detail">
-                      <span>Total Amount</span>
-                      <strong>{formatPrice(booking.total_amount)}</strong>
-                    </div>
-                  </div>
-
-                  <div className="my-booking-footer">
-                    <div>
-                      <span className="my-payment-label">Payment</span>
                       <span
-                        className={`my-payment-status my-payment-status-${paymentStatus.toLowerCase()}`}
+                        className={`my-booking-status my-booking-status-${bookingStatus.toLowerCase()}`}
                       >
-                        {paymentStatus}
+                        {bookingStatus}
                       </span>
                     </div>
 
-                    <div className="my-booking-confirmed-message">
-                      Confirmation and payment details are handled on WhatsApp.
+                    <div className="my-booking-details">
+                      <div className="my-booking-detail">
+                        <span>Dates</span>
+                        <strong>
+                          {formatDate(tripStart)}
+                          {booking.trip?.end_date ? ` – ${formatDate(booking.trip.end_date)}` : ""}
+                        </strong>
+                      </div>
+
+                      <div className="my-booking-detail">
+                        <span>Travellers</span>
+                        <strong>{booking.number_of_people}</strong>
+                      </div>
+
+                      <div className="my-booking-detail">
+                        <span>Total Amount</span>
+                        <strong>{formatPrice(booking.total_amount)}</strong>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              );
-            })}
-          </section>
-        )}
-      </div>
-    </main>
+
+                    <div className="my-booking-footer">
+                      <div>
+                        <span className="my-payment-label">Payment</span>
+                        <span
+                          className={`my-payment-status my-payment-status-${paymentStatus.toLowerCase()}`}
+                        >
+                          {paymentStatus}
+                        </span>
+                      </div>
+
+                      <div className="my-booking-confirmed-message">
+                        Confirmation and payment details are handled on WhatsApp.
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
+          )}
+        </div>
+      </main>
+    </>
   );
 }

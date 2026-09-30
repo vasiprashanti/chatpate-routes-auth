@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 6%;
+  padding: 18px 6%;
   color: #fff;
 }
 
@@ -17,7 +17,7 @@
   left: auto;
   right: auto;
   z-index: 20;
-  padding: 18px 5%;
+  padding: 12px 5%;
   border-bottom: 1px solid #e2e9e6;
   background: #fff;
   box-shadow: 0 4px 18px rgba(20, 60, 50, 0.06);
@@ -47,6 +47,41 @@
   color: #596b63;
 }
 
+/* Keep the shared site navigation available while scrolling. */
+.navbar.navbar.global-site-navbar {
+  position: fixed;
+  inset: 0 0 auto;
+}
+
+.navbar.navbar-light.global-site-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+}
+
+.navbar.navbar-scrolled.global-site-navbar {
+  border-bottom: 1px solid rgba(20, 60, 50, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 4px 18px rgba(20, 60, 50, 0.1);
+  color: #173f35;
+  backdrop-filter: blur(12px);
+}
+
+.navbar.navbar-scrolled.global-site-navbar .nav-brand,
+.navbar.navbar-scrolled.global-site-navbar .nav-links a {
+  color: #173f35;
+}
+
+.navbar.navbar-scrolled.global-site-navbar .nav-account-trigger {
+  border-color: #d8e2de;
+  background: #f8faf9;
+  color: #173f35;
+}
+
+html {
+  scroll-padding-top: 88px;
+}
+
 .navbar .nav-brand,
 .mobile-menu .mobile-menu-brand {
   color: #a5f2fc;
@@ -54,6 +89,11 @@
   font-weight: 500;
   letter-spacing: -0.3px;
   text-decoration: none;
+}
+
+.mobile-menu .mobile-menu-brand {
+  font-size: clamp(22px, 5.2vw, 30px);
+  letter-spacing: -1px;
 }
 
 .nav-links {
@@ -211,9 +251,9 @@
 
 .hamburger {
   display: none;
-  width: 28px;
-  height: 22px;
-  padding: 0;
+  width: 44px;
+  height: 44px;
+  padding: 11px 8px;
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -237,7 +277,10 @@
   min-height: 100vh;
   min-height: 100dvh;
   flex-direction: column;
-  padding: 25px 6% 35px;
+  padding: calc(25px + env(safe-area-inset-top))
+    max(6%, env(safe-area-inset-right))
+    calc(35px + env(safe-area-inset-bottom))
+    max(6%, env(safe-area-inset-left));
   overflow-y: auto;
   background: #315c45;
   color: #fff;
@@ -265,8 +308,8 @@
 .menu-close {
   position: relative;
   display: flex;
-  width: 42px;
-  height: 42px;
+  width: clamp(40px, 9vw, 52px);
+  height: clamp(40px, 9vw, 52px);
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -277,7 +320,7 @@
 
 .menu-close span {
   position: absolute;
-  width: 18px;
+  width: 19px;
   height: 1.5px;
   background: #fff;
 }
@@ -299,78 +342,63 @@
 .mobile-menu-links a {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px 0;
+  gap: clamp(14px, 4vw, 30px);
+  padding: 14px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
-  font-size: clamp(32px, 9vw, 52px);
+  font-size: clamp(22px, 6vw, 36px);
   font-weight: 400;
-  letter-spacing: -2px;
+  letter-spacing: -1px;
   text-decoration: none;
 }
 
 .mobile-menu-links a span {
-  min-width: 25px;
+  min-width: clamp(28px, 8vw, 40px);
   color: #fff;
-  font-size: 10px;
+  font-size: clamp(11px, 2vw, 15px);
   font-weight: 600;
   letter-spacing: 1px;
   opacity: 0.55;
 }
 
 .mobile-menu-cta {
+  display: flex;
+  min-height: 56px;
   flex-shrink: 0;
-  padding: 13px 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px;
   border-radius: 30px;
   background: #a5f2fc;
   color: #111;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.3px;
   text-align: center;
   text-decoration: none;
 }
 
-.mobile-account {
+.mobile-menu-logout {
   display: flex;
+  min-height: 56px;
   flex-shrink: 0;
-  flex-direction: column;
-  gap: 14px;
-  margin: 0 0 22px;
-  padding: 18px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.mobile-account-email,
-.mobile-account-status {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.mobile-account-email strong {
-  display: block;
-  overflow-wrap: anywhere;
-  color: #fff;
-  font-size: 14px;
-}
-
-.mobile-account a,
-.mobile-account button {
-  align-self: flex-start;
-  padding: 0;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 14px 18px;
   border: 0;
-  background: transparent;
-  color: #fff;
+  border-radius: 30px;
+  background: #fff;
+  color: #174534;
   font: inherit;
   font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
-.mobile-account button:disabled {
+.mobile-menu-logout:disabled {
   cursor: wait;
   opacity: 0.7;
 }
@@ -387,10 +415,10 @@ body.menu-open {
 
 @media (max-width: 980px) {
   .navbar {
-    padding: 22px 5%;
+    padding: 12px 5%;
   }
   .navbar.navbar-light {
-    padding: 18px 5%;
+    padding: 10px 5%;
   }
   .nav-links {
     display: none;

@@ -64,6 +64,75 @@ function getAvailability(
   return `${capacity} spots available`;
 }
 
+function TripSummary({
+  trip,
+  totalAmount,
+  breakdown,
+}: {
+  trip: BackendTrip;
+  totalAmount: number;
+  breakdown: string;
+}) {
+  return (
+    <div className="summary-card">
+      <div className="summary-image">
+        {trip.cover_image_url ? (
+          <img src={trip.cover_image_url} alt={trip.title} />
+        ) : (
+          <div className="summary-image-empty">No trip image</div>
+        )}
+      </div>
+
+      <div className="summary-body">
+        <div className="summary-label">Your Trip</div>
+        <h2 className="summary-title">{trip.title}</h2>
+
+        <div className="summary-info">
+          <div className="summary-row">
+            <span className="summary-key">Dates</span>
+            <span className="summary-value">
+              {formatDateRange(trip.start_date, trip.end_date)}
+            </span>
+          </div>
+          <div className="summary-row">
+            <span className="summary-key">Duration</span>
+            <span className="summary-value">
+              {trip.duration_days ? `${trip.duration_days} Days` : "Not specified"}
+            </span>
+          </div>
+          <div className="summary-row">
+            <span className="summary-key">Location</span>
+            <span className="summary-value">
+              {trip.destination || "Not specified"}
+            </span>
+          </div>
+          <div className="summary-row">
+            <span className="summary-key">Availability</span>
+            <span className="summary-value">
+              {getAvailability(trip.capacity)}
+            </span>
+          </div>
+        </div>
+
+        <div className="summary-price">
+          <div>
+            <div className="summary-price-label">Total</div>
+            <div className="summary-price-value">
+              {formatPrice(totalAmount)}
+            </div>
+            <div className="summary-calculation">{breakdown}</div>
+          </div>
+        </div>
+
+        <div className="summary-trust">
+          <div className="trust-item">Secure Booking</div>
+          <div className="trust-item">WhatsApp Support</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function BookingPage() {
   const [tripId, setTripId] = useState("");
 
@@ -504,6 +573,14 @@ I will share my payment details and screenshot with you on WhatsApp.`;
               your booking with us on WhatsApp.
             </p>
 
+            <aside className="booking-summary booking-summary-mobile">
+              <TripSummary
+                trip={trip}
+                totalAmount={totalAmount}
+                breakdown={breakdown}
+              />
+            </aside>
+
             {!submitted ? (
               <form
                 className="booking-form-card"
@@ -805,120 +882,12 @@ I will share my payment details and screenshot with you on WhatsApp.`;
           {/* TRIP SUMMARY */}
           {/* ========================= */}
 
-          <aside className="booking-summary">
-            <div className="summary-card">
-              <div className="summary-image">
-                {trip.cover_image_url ? (
-                  <img
-                    src={trip.cover_image_url}
-                    alt={trip.title}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      minHeight: "220px",
-                      display: "flex",
-                      alignItems:
-                        "center",
-                      justifyContent:
-                        "center",
-                    }}
-                  >
-                    No trip image
-                  </div>
-                )}
-              </div>
-
-              <div className="summary-body">
-                <div className="summary-label">
-                  Your Trip
-                </div>
-
-                <h2 className="summary-title">
-                  {trip.title}
-                </h2>
-
-                <div className="summary-info">
-                  <div className="summary-row">
-                    <span className="summary-key">
-                      Dates
-                    </span>
-
-                    <span className="summary-value">
-                      {formatDateRange(
-                        trip.start_date,
-                        trip.end_date,
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="summary-row">
-                    <span className="summary-key">
-                      Duration
-                    </span>
-
-                    <span className="summary-value">
-                      {trip.duration_days
-                        ? `${trip.duration_days} Days`
-                        : "Not specified"}
-                    </span>
-                  </div>
-
-                  <div className="summary-row">
-                    <span className="summary-key">
-                      Location
-                    </span>
-
-                    <span className="summary-value">
-                      {trip.destination ||
-                        "Not specified"}
-                    </span>
-                  </div>
-
-                  <div className="summary-row">
-                    <span className="summary-key">
-                      Availability
-                    </span>
-
-                    <span className="summary-value">
-                      {getAvailability(
-                        trip.capacity,
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="summary-price">
-                  <div>
-                    <div className="summary-price-label">
-                      Total
-                    </div>
-
-                    <div className="summary-price-value">
-                      {formatPrice(
-                        totalAmount,
-                      )}
-                    </div>
-
-                    <div className="summary-calculation">
-                      {breakdown}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="summary-trust">
-                  <div className="trust-item">
-                    Secure Booking
-                  </div>
-
-                  <div className="trust-item">
-                    WhatsApp Support
-                  </div>
-                </div>
-              </div>
-            </div>
+          <aside className="booking-summary booking-summary-desktop">
+            <TripSummary
+              trip={trip}
+              totalAmount={totalAmount}
+              breakdown={breakdown}
+            />
           </aside>
         </div>
       </main>
