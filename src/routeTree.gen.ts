@@ -22,23 +22,29 @@ import { Route as TripDetailRouteImport } from './routes/trip-detail'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMeetupsRouteImport } from './routes/admin.meetups'
 import { Route as AdminTripsRouteImport } from './routes/admin.trips'
 import { Route as ApiBookingRouteImport } from './routes/api/booking'
 import { Route as ApiEnquiriesRouteImport } from './routes/api/enquiries'
+import { Route as ApiMeetupsRouteImport } from './routes/api/meetups'
 import { Route as ApiMyBookingsRouteImport } from './routes/api/my-bookings'
 import { Route as ApiTripsRouteImport } from './routes/api/trips'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as DashboardBookingsRouteImport } from './routes/dashboard.bookings'
+import { Route as AdminMeetupsIndexRouteImport } from './routes/admin.meetups.index'
 import { Route as AdminTripsIndexRouteImport } from './routes/admin.trips.index'
 import { Route as AdminTripsNewRouteImport } from './routes/admin.trips.new'
 import { Route as ApiAdminBookingsRouteImport } from './routes/api/admin/bookings'
 import { Route as ApiAdminEnquiriesRouteImport } from './routes/api/admin/enquiries'
+import { Route as ApiAdminMeetupsRouteImport } from './routes/api/admin/meetups'
 import { Route as ApiAdminTripsRouteImport } from './routes/api/admin/trips'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiTripsTripIdRouteImport } from './routes/api/trips/$tripId'
 import { Route as AdminTripsTripIdEditRouteImport } from './routes/admin.trips.$tripId.edit'
 import { Route as ApiAdminBookingsBookingIdRouteImport } from './routes/api/admin/bookings/$bookingId'
 import { Route as ApiAdminEnquiresEnquiryIdRouteImport } from './routes/api/admin/enquires/$enquiryId'
+import { Route as ApiAdminMeetupsMeetupIdRouteImport } from './routes/api/admin/meetups.$meetupId'
+import { Route as ApiAdminMeetupsImagesRouteImport } from './routes/api/admin/meetups.images'
 import { Route as ApiAdminTripsTripIdRouteImport } from './routes/api/admin/trips/$tripId'
 import { Route as ApiTripsTripIdImagesRouteImport } from './routes/api/trips/$tripId.images'
 import { Route as ApiTripsTripIdItineraryRouteImport } from './routes/api/trips/$tripId.itinerary'
@@ -110,6 +116,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminMeetupsRoute = AdminMeetupsRouteImport.update({
+  id: '/meetups',
+  path: '/meetups',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminTripsRoute = AdminTripsRouteImport.update({
   id: '/trips',
   path: '/trips',
@@ -123,6 +134,11 @@ const ApiBookingRoute = ApiBookingRouteImport.update({
 const ApiEnquiriesRoute = ApiEnquiriesRouteImport.update({
   id: '/api/enquiries',
   path: '/api/enquiries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMeetupsRoute = ApiMeetupsRouteImport.update({
+  id: '/api/meetups',
+  path: '/api/meetups',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMyBookingsRoute = ApiMyBookingsRouteImport.update({
@@ -145,6 +161,11 @@ const DashboardBookingsRoute = DashboardBookingsRouteImport.update({
   path: '/dashboard/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMeetupsIndexRoute = AdminMeetupsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminMeetupsRoute,
+} as any)
 const AdminTripsIndexRoute = AdminTripsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -163,6 +184,11 @@ const ApiAdminBookingsRoute = ApiAdminBookingsRouteImport.update({
 const ApiAdminEnquiriesRoute = ApiAdminEnquiriesRouteImport.update({
   id: '/api/admin/enquiries',
   path: '/api/admin/enquiries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminMeetupsRoute = ApiAdminMeetupsRouteImport.update({
+  id: '/api/admin/meetups',
+  path: '/api/admin/meetups',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminTripsRoute = ApiAdminTripsRouteImport.update({
@@ -197,6 +223,16 @@ const ApiAdminEnquiresEnquiryIdRoute =
     path: '/api/admin/enquires/$enquiryId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminMeetupsMeetupIdRoute = ApiAdminMeetupsMeetupIdRouteImport.update({
+  id: '/$meetupId',
+  path: '/$meetupId',
+  getParentRoute: () => ApiAdminMeetupsRoute,
+} as any)
+const ApiAdminMeetupsImagesRoute = ApiAdminMeetupsImagesRouteImport.update({
+  id: '/images',
+  path: '/images',
+  getParentRoute: () => ApiAdminMeetupsRoute,
+} as any)
 const ApiAdminTripsTripIdRoute = ApiAdminTripsTripIdRouteImport.update({
   id: '/$tripId',
   path: '/$tripId',
@@ -238,9 +274,11 @@ export interface FileRoutesByFullPath {
   '/trip-detail': typeof TripDetailRoute
   '/trips': typeof TripsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/meetups': typeof AdminMeetupsRouteWithChildren
   '/admin/trips': typeof AdminTripsRouteWithChildren
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
@@ -249,13 +287,17 @@ export interface FileRoutesByFullPath {
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/trips/$tripId': typeof ApiTripsTripIdRouteWithChildren
+  '/admin/meetups/': typeof AdminMeetupsIndexRoute
   '/admin/trips/': typeof AdminTripsIndexRoute
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
+  '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
   '/api/trips/$tripId/images': typeof ApiTripsTripIdImagesRouteWithChildren
   '/api/trips/$tripId/itinerary': typeof ApiTripsTripIdItineraryRouteWithChildren
@@ -276,6 +318,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
@@ -284,13 +327,17 @@ export interface FileRoutesByTo {
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/trips/$tripId': typeof ApiTripsTripIdRouteWithChildren
+  '/admin/meetups': typeof AdminMeetupsIndexRoute
   '/admin/trips': typeof AdminTripsIndexRoute
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
+  '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
   '/api/trips/$tripId/images': typeof ApiTripsTripIdImagesRouteWithChildren
   '/api/trips/$tripId/itinerary': typeof ApiTripsTripIdItineraryRouteWithChildren
@@ -311,9 +358,11 @@ export interface FileRoutesById {
   '/trip-detail': typeof TripDetailRoute
   '/trips': typeof TripsRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/meetups': typeof AdminMeetupsRouteWithChildren
   '/admin/trips': typeof AdminTripsRouteWithChildren
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
@@ -322,13 +371,17 @@ export interface FileRoutesById {
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/trips/$tripId': typeof ApiTripsTripIdRouteWithChildren
+  '/admin/meetups/': typeof AdminMeetupsIndexRoute
   '/admin/trips/': typeof AdminTripsIndexRoute
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
+  '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
   '/api/trips/$tripId/images': typeof ApiTripsTripIdImagesRouteWithChildren
   '/api/trips/$tripId/itinerary': typeof ApiTripsTripIdItineraryRouteWithChildren
@@ -350,9 +403,11 @@ export interface FileRouteTypes {
     | '/trip-detail'
     | '/trips'
     | '/admin/login'
+    | '/admin/meetups'
     | '/admin/trips'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
@@ -361,13 +416,17 @@ export interface FileRouteTypes {
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
     | '/api/trips/$tripId'
+    | '/admin/meetups/'
     | '/admin/trips/'
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/meetups/$meetupId'
+    | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
     | '/api/trips/$tripId/images'
     | '/api/trips/$tripId/itinerary'
@@ -388,6 +447,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
@@ -396,13 +456,17 @@ export interface FileRouteTypes {
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
     | '/api/trips/$tripId'
+    | '/admin/meetups'
     | '/admin/trips'
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/meetups/$meetupId'
+    | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
     | '/api/trips/$tripId/images'
     | '/api/trips/$tripId/itinerary'
@@ -422,9 +486,11 @@ export interface FileRouteTypes {
     | '/trip-detail'
     | '/trips'
     | '/admin/login'
+    | '/admin/meetups'
     | '/admin/trips'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
@@ -433,13 +499,17 @@ export interface FileRouteTypes {
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
     | '/api/trips/$tripId'
+    | '/admin/meetups/'
     | '/admin/trips/'
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/meetups/$meetupId'
+    | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
     | '/api/trips/$tripId/images'
     | '/api/trips/$tripId/itinerary'
@@ -461,12 +531,14 @@ export interface RootRouteChildren {
   TripsRoute: typeof TripsRoute
   ApiBookingRoute: typeof ApiBookingRoute
   ApiEnquiriesRoute: typeof ApiEnquiriesRoute
+  ApiMeetupsRoute: typeof ApiMeetupsRoute
   ApiMyBookingsRoute: typeof ApiMyBookingsRoute
   ApiTripsRoute: typeof ApiTripsRouteWithChildren
   AuthCallbackRoute: typeof AuthCallbackRoute
   DashboardBookingsRoute: typeof DashboardBookingsRoute
   ApiAdminBookingsRoute: typeof ApiAdminBookingsRouteWithChildren
   ApiAdminEnquiriesRoute: typeof ApiAdminEnquiriesRoute
+  ApiAdminMeetupsRoute: typeof ApiAdminMeetupsRouteWithChildren
   ApiAdminTripsRoute: typeof ApiAdminTripsRouteWithChildren
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAdminEnquiresEnquiryIdRoute: typeof ApiAdminEnquiresEnquiryIdRoute
@@ -565,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/meetups': {
+      id: '/admin/meetups'
+      path: '/meetups'
+      fullPath: '/admin/meetups'
+      preLoaderRoute: typeof AdminMeetupsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/trips': {
       id: '/admin/trips'
       path: '/trips'
@@ -584,6 +663,13 @@ declare module '@tanstack/react-router' {
       path: '/api/enquiries'
       fullPath: '/api/enquiries'
       preLoaderRoute: typeof ApiEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/meetups': {
+      id: '/api/meetups'
+      path: '/api/meetups'
+      fullPath: '/api/meetups'
+      preLoaderRoute: typeof ApiMeetupsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/my-bookings': {
@@ -614,6 +700,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/meetups/': {
+      id: '/admin/meetups/'
+      path: '/'
+      fullPath: '/admin/meetups/'
+      preLoaderRoute: typeof AdminMeetupsIndexRouteImport
+      parentRoute: typeof AdminMeetupsRoute
+    }
     '/admin/trips/': {
       id: '/admin/trips/'
       path: '/'
@@ -640,6 +733,13 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/enquiries'
       fullPath: '/api/admin/enquiries'
       preLoaderRoute: typeof ApiAdminEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/meetups': {
+      id: '/api/admin/meetups'
+      path: '/api/admin/meetups'
+      fullPath: '/api/admin/meetups'
+      preLoaderRoute: typeof ApiAdminMeetupsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/trips': {
@@ -684,6 +784,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminEnquiresEnquiryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/meetups/$meetupId': {
+      id: '/api/admin/meetups/$meetupId'
+      path: '/$meetupId'
+      fullPath: '/api/admin/meetups/$meetupId'
+      preLoaderRoute: typeof ApiAdminMeetupsMeetupIdRouteImport
+      parentRoute: typeof ApiAdminMeetupsRoute
+    }
+    '/api/admin/meetups/images': {
+      id: '/api/admin/meetups/images'
+      path: '/images'
+      fullPath: '/api/admin/meetups/images'
+      preLoaderRoute: typeof ApiAdminMeetupsImagesRouteImport
+      parentRoute: typeof ApiAdminMeetupsRoute
+    }
     '/api/admin/trips/$tripId': {
       id: '/api/admin/trips/$tripId'
       path: '/$tripId'
@@ -722,6 +836,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminMeetupsRouteChildren {
+  AdminMeetupsIndexRoute: typeof AdminMeetupsIndexRoute
+}
+
+const AdminMeetupsRouteChildren: AdminMeetupsRouteChildren = {
+  AdminMeetupsIndexRoute: AdminMeetupsIndexRoute,
+}
+
+const AdminMeetupsRouteWithChildren = AdminMeetupsRoute._addFileChildren(
+  AdminMeetupsRouteChildren,
+)
+
 interface AdminTripsRouteChildren {
   AdminTripsNewRoute: typeof AdminTripsNewRoute
   AdminTripsIndexRoute: typeof AdminTripsIndexRoute
@@ -740,12 +866,14 @@ const AdminTripsRouteWithChildren = AdminTripsRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminMeetupsRoute: typeof AdminMeetupsRouteWithChildren
   AdminTripsRoute: typeof AdminTripsRouteWithChildren
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
+  AdminMeetupsRoute: AdminMeetupsRouteWithChildren,
   AdminTripsRoute: AdminTripsRouteWithChildren,
   AdminIndexRoute: AdminIndexRoute,
 }
@@ -815,6 +943,20 @@ const ApiAdminBookingsRouteChildren: ApiAdminBookingsRouteChildren = {
 const ApiAdminBookingsRouteWithChildren =
   ApiAdminBookingsRoute._addFileChildren(ApiAdminBookingsRouteChildren)
 
+interface ApiAdminMeetupsRouteChildren {
+  ApiAdminMeetupsMeetupIdRoute: typeof ApiAdminMeetupsMeetupIdRoute
+  ApiAdminMeetupsImagesRoute: typeof ApiAdminMeetupsImagesRoute
+}
+
+const ApiAdminMeetupsRouteChildren: ApiAdminMeetupsRouteChildren = {
+  ApiAdminMeetupsMeetupIdRoute: ApiAdminMeetupsMeetupIdRoute,
+  ApiAdminMeetupsImagesRoute: ApiAdminMeetupsImagesRoute,
+}
+
+const ApiAdminMeetupsRouteWithChildren = ApiAdminMeetupsRoute._addFileChildren(
+  ApiAdminMeetupsRouteChildren,
+)
+
 interface ApiAdminTripsRouteChildren {
   ApiAdminTripsTripIdRoute: typeof ApiAdminTripsTripIdRoute
 }
@@ -841,12 +983,14 @@ const rootRouteChildren: RootRouteChildren = {
   TripsRoute: TripsRoute,
   ApiBookingRoute: ApiBookingRoute,
   ApiEnquiriesRoute: ApiEnquiriesRoute,
+  ApiMeetupsRoute: ApiMeetupsRoute,
   ApiMyBookingsRoute: ApiMyBookingsRoute,
   ApiTripsRoute: ApiTripsRouteWithChildren,
   AuthCallbackRoute: AuthCallbackRoute,
   DashboardBookingsRoute: DashboardBookingsRoute,
   ApiAdminBookingsRoute: ApiAdminBookingsRouteWithChildren,
   ApiAdminEnquiriesRoute: ApiAdminEnquiriesRoute,
+  ApiAdminMeetupsRoute: ApiAdminMeetupsRouteWithChildren,
   ApiAdminTripsRoute: ApiAdminTripsRouteWithChildren,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAdminEnquiresEnquiryIdRoute: ApiAdminEnquiresEnquiryIdRoute,

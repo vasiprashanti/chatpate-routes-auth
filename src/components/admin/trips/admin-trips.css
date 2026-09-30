@@ -68,6 +68,28 @@
   line-height: 1;
 }
 
+.admin-trips-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.admin-manage-meetups-button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid #d8e3de;
+  border-radius: 10px;
+  background: #fff;
+  color: #176b91;
+  font-size: 14px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
 .admin-trip-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -395,6 +417,16 @@
   .admin-create-button {
     width: 100%;
     justify-content: center;
+  }
+
+  .admin-trips-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-manage-meetups-button {
+    width: 100%;
   }
 
   .admin-trip-stats {

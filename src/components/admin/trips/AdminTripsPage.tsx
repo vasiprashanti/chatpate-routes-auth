@@ -1,14 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Archive,
-  BookOpen,
-  CalendarDays,
-  Eye,
-  FileText,
-  Map,
-  Pencil,
-} from "lucide-react";
+import { Archive, BookOpen, CalendarDays, Eye, FileText, Map, Pencil } from "lucide-react";
 import "./admin-trips.css";
 import { supabase } from "@/integerations/supabase/client";
 import unpublishIcon from "@/assets/unpublish.png";
@@ -50,14 +42,11 @@ const getLocalDateKey = () => {
 export default function AdminTripsPage() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<"All" | TripStatus>("All");
+  const [statusFilter, setStatusFilter] = useState<"All" | TripStatus>("All");
   const [isLoading, setIsLoading] = useState(true);
   const [today, setToday] = useState(getLocalDateKey);
 
-  const formatStatus = (
-    status: BackendTrip["status"],
-  ): TripStatus => {
+  const formatStatus = (status: BackendTrip["status"]): TripStatus => {
     switch (status) {
       case "published":
         return "Published";
@@ -68,10 +57,7 @@ export default function AdminTripsPage() {
     }
   };
 
-  const formatDates = (
-    startDate: string | null,
-    endDate: string | null,
-  ) => {
+  const formatDates = (startDate: string | null, endDate: string | null) => {
     if (!startDate && !endDate) return "—";
 
     if (startDate && endDate) {
@@ -103,21 +89,14 @@ export default function AdminTripsPage() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "Could not load trips.",
-        );
+        throw new Error(result.message || "Could not load trips.");
       }
 
-      const formattedTrips: Trip[] = (
-        result.trips as BackendTrip[]
-      ).map((trip) => ({
+      const formattedTrips: Trip[] = (result.trips as BackendTrip[]).map((trip) => ({
         id: trip.id,
         title: trip.title || "Untitled Trip",
         destination: trip.destination || "—",
-        dates: formatDates(
-          trip.start_date,
-          trip.end_date,
-        ),
+        dates: formatDates(trip.start_date, trip.end_date),
         startDate: trip.start_date,
         endDate: trip.end_date,
         price: Number(trip.price) || 0,
@@ -129,11 +108,7 @@ export default function AdminTripsPage() {
     } catch (error) {
       console.error("Load trips error:", error);
 
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Could not load trips.",
-      );
+      alert(error instanceof Error ? error.message : "Could not load trips.");
     } finally {
       setIsLoading(false);
     }
@@ -154,8 +129,7 @@ export default function AdminTripsPage() {
   const tripStats = useMemo(() => {
     const activeUpcoming = trips.filter(
       (trip) =>
-        trip.status === "Published" &&
-        (!trip.endDate || trip.endDate.slice(0, 10) >= today),
+        trip.status === "Published" && (!trip.endDate || trip.endDate.slice(0, 10) >= today),
     ).length;
 
     return [
@@ -195,18 +169,13 @@ export default function AdminTripsPage() {
         trip.title.toLowerCase().includes(query) ||
         trip.destination.toLowerCase().includes(query);
 
-      const matchesStatus =
-        statusFilter === "All" ||
-        trip.status === statusFilter;
+      const matchesStatus = statusFilter === "All" || trip.status === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
   }, [trips, search, statusFilter]);
 
-  const updateTripStatus = async (
-    id: string,
-    status: "draft" | "published" | "archived",
-  ) => {
+  const updateTripStatus = async (id: string, status: "draft" | "published" | "archived") => {
     try {
       const {
         data: { session },
@@ -231,36 +200,25 @@ export default function AdminTripsPage() {
       const result = await response.json();
 
       if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "Could not update trip.",
-        );
+        throw new Error(result.message || "Could not update trip.");
       }
 
       await loadTrips();
     } catch (error) {
       console.error("Update trip status error:", error);
 
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Could not update trip.",
-      );
+      alert(error instanceof Error ? error.message : "Could not update trip.");
     }
   };
 
   const togglePublish = async (trip: Trip) => {
-    const nextStatus =
-      trip.status === "Published"
-        ? "draft"
-        : "published";
+    const nextStatus = trip.status === "Published" ? "draft" : "published";
 
     await updateTripStatus(trip.id, nextStatus);
   };
 
   const archiveTrip = async (id: string) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to archive this trip?",
-    );
+    const confirmed = window.confirm("Are you sure you want to archive this trip?");
 
     if (!confirmed) return;
 
@@ -276,29 +234,23 @@ export default function AdminTripsPage() {
 
             <h1>Trip Management</h1>
 
-            <p className="admin-subtitle">
-              Create, edit and manage all Chatpate Routes trips.
-            </p>
+            <p className="admin-subtitle">Create, edit and manage all Chatpate Routes trips.</p>
           </div>
 
-          <Link
-            to="/admin/trips/new"
-            className="admin-create-button"
-          >
-            <span>+</span>
-            Create Trip
-          </Link>
+          <div className="admin-trips-header-actions">
+            <Link to="/admin/meetups" className="admin-manage-meetups-button">
+              Manage Meetups
+            </Link>
+            <Link to="/admin/trips/new" className="admin-create-button">
+              <span>+</span>
+              Create Trip
+            </Link>
+          </div>
         </header>
 
-        <section
-          className="admin-trip-stats"
-          aria-label="Trip statistics"
-        >
+        <section className="admin-trip-stats" aria-label="Trip statistics">
           {tripStats.map(({ label, value, icon: Icon, tone }) => (
-            <article
-              className={`admin-trip-stat-card admin-trip-stat-${tone}`}
-              key={label}
-            >
+            <article className={`admin-trip-stat-card admin-trip-stat-${tone}`} key={label}>
               <div className="admin-trip-stat-copy">
                 <p>{label}</p>
                 <strong>{isLoading ? "—" : value}</strong>
@@ -318,36 +270,22 @@ export default function AdminTripsPage() {
               type="text"
               placeholder="Search trips or destinations..."
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
             />
           </div>
 
           <div className="admin-filter">
-            <label htmlFor="status-filter">
-              Status
-            </label>
+            <label htmlFor="status-filter">Status</label>
 
             <select
               id="status-filter"
               value={statusFilter}
-              onChange={(event) =>
-                setStatusFilter(
-                  event.target.value as
-                    | "All"
-                    | TripStatus,
-                )
-              }
+              onChange={(event) => setStatusFilter(event.target.value as "All" | TripStatus)}
             >
               <option value="All">All</option>
-              <option value="Published">
-                Published
-              </option>
+              <option value="Published">Published</option>
               <option value="Draft">Draft</option>
-              <option value="Archived">
-                Archived
-              </option>
+              <option value="Archived">Archived</option>
             </select>
           </div>
         </section>
@@ -358,10 +296,7 @@ export default function AdminTripsPage() {
               <h2>All Trips</h2>
 
               <span>
-                {filteredTrips.length}{" "}
-                {filteredTrips.length === 1
-                  ? "trip"
-                  : "trips"}
+                {filteredTrips.length} {filteredTrips.length === 1 ? "trip" : "trips"}
               </span>
             </div>
           </div>
@@ -383,10 +318,7 @@ export default function AdminTripsPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td
-                      colSpan={7}
-                      style={{ textAlign: "center" }}
-                    >
+                    <td colSpan={7} style={{ textAlign: "center" }}>
                       Loading trips...
                     </td>
                   </tr>
@@ -394,28 +326,19 @@ export default function AdminTripsPage() {
                   filteredTrips.map((trip) => (
                     <tr key={trip.id}>
                       <td>
-                        <div className="admin-trip-name">
-                          {trip.title}
-                        </div>
+                        <div className="admin-trip-name">{trip.title}</div>
                       </td>
 
                       <td>{trip.destination}</td>
 
                       <td>{trip.dates}</td>
 
-                      <td className="admin-price">
-                        ₹
-                        {trip.price.toLocaleString(
-                          "en-IN",
-                        )}
-                      </td>
+                      <td className="admin-price">₹{trip.price.toLocaleString("en-IN")}</td>
 
                       <td>{trip.seats}</td>
 
                       <td>
-                        <span
-                          className={`admin-status admin-status-${trip.status.toLowerCase()}`}
-                        >
+                        <span className={`admin-status admin-status-${trip.status.toLowerCase()}`}>
                           <span className="admin-status-dot" />
                           {trip.status}
                         </span>
@@ -462,8 +385,7 @@ export default function AdminTripsPage() {
                             <span>Bookings</span>
                           </Link>
 
-                          {trip.status !==
-                            "Archived" && (
+                          {trip.status !== "Archived" && (
                             <>
                               <button
                                 type="button"
@@ -472,41 +394,32 @@ export default function AdminTripsPage() {
                                     ? "admin-action admin-action-icon"
                                     : "admin-action"
                                 }
-                                onClick={() =>
-                                  togglePublish(trip)
-                                }
+                                onClick={() => togglePublish(trip)}
                                 aria-label={
                                   trip.status === "Published"
                                     ? `Unpublish ${trip.title}`
                                     : `Publish ${trip.title}`
                                 }
-                                title={
-                                  trip.status === "Published"
-                                    ? "Unpublish"
-                                    : "Publish"
-                                }
+                                title={trip.status === "Published" ? "Unpublish" : "Publish"}
                               >
-                                {trip.status ===
-                                "Published"
-                                  ? <span
-                                      className="admin-action-unpublish-icon"
-                                      style={{
-                                        maskImage: `url("${unpublishIcon}")`,
-                                        WebkitMaskImage: `url("${unpublishIcon}")`,
-                                      }}
-                                      aria-hidden="true"
-                                    />
-                                  : "Publish"}
+                                {trip.status === "Published" ? (
+                                  <span
+                                    className="admin-action-unpublish-icon"
+                                    style={{
+                                      maskImage: `url("${unpublishIcon}")`,
+                                      WebkitMaskImage: `url("${unpublishIcon}")`,
+                                    }}
+                                    aria-hidden="true"
+                                  />
+                                ) : (
+                                  "Publish"
+                                )}
                               </button>
 
                               <button
                                 type="button"
                                 className="admin-action admin-action-danger"
-                                onClick={() =>
-                                  archiveTrip(
-                                    trip.id,
-                                  )
-                                }
+                                onClick={() => archiveTrip(trip.id)}
                               >
                                 Archive
                               </button>
@@ -520,21 +433,15 @@ export default function AdminTripsPage() {
               </tbody>
             </table>
 
-            {!isLoading &&
-              filteredTrips.length === 0 && (
-                <div className="admin-empty-state">
-                  <div className="admin-empty-icon">
-                    ⌕
-                  </div>
+            {!isLoading && filteredTrips.length === 0 && (
+              <div className="admin-empty-state">
+                <div className="admin-empty-icon">⌕</div>
 
-                  <h3>No trips found</h3>
+                <h3>No trips found</h3>
 
-                  <p>
-                    Try changing your search or status
-                    filter.
-                  </p>
-                </div>
-              )}
+                <p>Try changing your search or status filter.</p>
+              </div>
+            )}
           </div>
         </section>
       </div>

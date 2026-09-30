@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { CalendarDays } from "lucide-react";
 import { DatePickerField } from "@/components/common/DatePickerField";
 import { homeImages } from "./images";
 
@@ -16,11 +17,7 @@ type BackendTrip = {
 export function HeroSection({
   onFindTrip,
 }: {
-  onFindTrip: (
-    destination: string,
-    travelDate: string,
-    selectedTrip?: BackendTrip,
-  ) => void;
+  onFindTrip: (destination: string, travelDate: string, selectedTrip?: BackendTrip) => void;
 }) {
   const [destination, setDestination] = useState("");
   const [travelDate, setTravelDate] = useState("");
@@ -56,24 +53,17 @@ export function HeroSection({
   }, []);
 
   const suggestions = useMemo(() => {
-  const query = destination.trim().toLowerCase();
+    const query = destination.trim().toLowerCase();
 
     if (!query) return [];
 
     return backendTrips.filter((trip) => {
-      const matchesDestination = `${trip.title} ${trip.destination}`
-        .toLowerCase()
-        .includes(query);
+      const matchesDestination = `${trip.title} ${trip.destination}`.toLowerCase().includes(query);
       const startDate = trip.start_date?.slice(0, 10) ?? "";
       const endDate = trip.end_date?.slice(0, 10) || startDate;
       const matchesDate =
         !travelDate ||
-        Boolean(
-          startDate &&
-            endDate &&
-            travelDate >= startDate &&
-            travelDate <= endDate,
-        );
+        Boolean(startDate && endDate && travelDate >= startDate && travelDate <= endDate);
 
       return matchesDestination && matchesDate;
     });
@@ -85,9 +75,7 @@ export function HeroSection({
     setSuggestionsOpen(false);
     setHighlightedSuggestion(-1);
   };
-  const handleDestinationKeyDown = (
-    event: KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleDestinationKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (!suggestionsOpen || suggestions.length === 0) {
       if (event.key === "Escape") {
         setSuggestionsOpen(false);
@@ -99,16 +87,11 @@ export function HeroSection({
     if (event.key === "ArrowDown") {
       event.preventDefault();
 
-      setHighlightedSuggestion(
-        (current) => (current + 1) % suggestions.length
-      );
+      setHighlightedSuggestion((current) => (current + 1) % suggestions.length);
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
 
-      setHighlightedSuggestion(
-        (current) =>
-          current <= 0 ? suggestions.length - 1 : current - 1
-      );
+      setHighlightedSuggestion((current) => (current <= 0 ? suggestions.length - 1 : current - 1));
     } else if (event.key === "Enter" && highlightedSuggestion >= 0) {
       event.preventDefault();
 
@@ -160,9 +143,7 @@ export function HeroSection({
               value={destination}
               role="combobox"
               aria-autocomplete="list"
-              aria-expanded={
-                suggestionsOpen && destination.trim().length > 0
-              }
+              aria-expanded={suggestionsOpen && destination.trim().length > 0}
               aria-controls="destinationSuggestions"
               onFocus={() => {
                 if (destination.trim()) {
@@ -179,11 +160,7 @@ export function HeroSection({
             />
 
             {suggestionsOpen && destination.trim() ? (
-              <div
-                className="destination-suggestions"
-                id="destinationSuggestions"
-                role="listbox"
-              >
+              <div className="destination-suggestions" id="destinationSuggestions" role="listbox">
                 {suggestions.length > 0 ? (
                   suggestions.map((trip, index) => (
                     <button
@@ -192,16 +169,12 @@ export function HeroSection({
                       role="option"
                       aria-selected={highlightedSuggestion === index}
                       className={`destination-suggestion${
-                        highlightedSuggestion === index
-                          ? " highlighted"
-                          : ""
+                        highlightedSuggestion === index ? " highlighted" : ""
                       }`}
                       onMouseDown={(event) => event.preventDefault()}
                       onClick={() => selectSuggestion(trip)}
                     >
-                      <span className="destination-suggestion-title">
-                        {trip.title}
-                      </span>
+                      <span className="destination-suggestion-title">{trip.title}</span>
 
                       <span className="destination-suggestion-meta">
                         {trip.destination} · Upcoming:{" "}
@@ -219,8 +192,7 @@ export function HeroSection({
                   ))
                 ) : (
                   <p className="destination-suggestion-empty">
-                    No scheduled trip matches yet. You can still send us an
-                    enquiry for this place.
+                    No scheduled trip matches yet. You can still send us an enquiry for this place.
                   </p>
                 )}
               </div>
@@ -235,11 +207,7 @@ export function HeroSection({
             className="date-picker-field--hero"
           />
 
-          <button
-            className="search-submit"
-            type="button"
-            onClick={handleFindTrip}
-          >
+          <button className="search-submit" type="button" onClick={handleFindTrip}>
             Find My Trip
           </button>
         </div>
@@ -483,76 +451,127 @@ export function ArchivesSection() {
   );
 }
 
+type FeaturedMeetup = {
+  id: string;
+  title: string;
+  destination: string;
+  event_date: string | null;
+  event_time: string | null;
+  description: string;
+  image_url: string | null;
+  joining_details: string | null;
+  join_url: string | null;
+};
+
+function formatMeetupDate(value: string | null) {
+  if (!value) return "Coming Soon";
+  const [year, month, day] = value.slice(0, 10).split("-").map(Number);
+  if (!year || !month || !day) return value;
+  return new Date(year, month - 1, day).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 export function MeetupsSection() {
+  const [meetup, setMeetup] = useState<FeaturedMeetup | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    void fetch("/api/meetups", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Meetup unavailable");
+        return (await response.json()) as { meetup?: FeaturedMeetup | null };
+      })
+      .then((result) => {
+        if (active) setMeetup(result.meetup ?? null);
+      })
+      .catch(() => {
+        if (active) setMeetup(null);
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const joinHref =
+    meetup?.join_url ||
+    `https://wa.me/919266770149?text=${encodeURIComponent(
+      meetup?.joining_details || "Hey! I’m interested in the next Chatpate Routes meetup.",
+    )}`;
+
   return (
     <section className="meetups" id="meetups">
       <div className="meetups-inner">
         <div className="meetups-header">
           <div className="meetups-heading">
-            <p className="meetups-eyebrow">MEETUPS · DELHI</p>
-            <h2>
-              Before the trip comes
-              <br />
-              the group chat.
-            </h2>
-          </div>
-
-          <p className="meetups-intro">
-            Delhi meetups for people who'd rather talk about their next escape than their Monday
-            plans.
-          </p>
-        </div>
-
-        <div className="meetup-feature">
-          <div className="meetup-image">
-            <img src={homeImages.meetup} alt="Chatpate Routes Delhi meetup" loading="lazy" />
-            <span className="meetup-location">DELHI</span>
-          </div>
-
-          <div className="meetup-content">
-            <div className="meetup-meta">
-              <span>UPCOMING</span>
-              <span>·</span>
-              <span>DELHI</span>
-            </div>
-
-            <h3>
-              Chai, Charcha
-              <br />
-              &amp; What's Next?
-            </h3>
-
-            <p>
-              A casual evening to meet fellow Chatpate people, swap travel stories, discover new
-              places, and maybe end up planning the next trip together.
-            </p>
-
-            <div className="meetup-details">
-              <div>
-                <span>DATE</span>
-                <strong>Coming Soon</strong>
-              </div>
-              <div>
-                <span>TIME</span>
-                <strong>6:30 PM</strong>
-              </div>
-              <div>
-                <span>PLACE</span>
-                <strong>Delhi</strong>
-              </div>
-            </div>
-
-            <a
-              href="https://wa.me/919266770149?text=Hey!%20I%E2%80%99m%20in%20for%20the%20next%20meetup"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="meetup-cta"
-            >
-              Join the Meetup
-              <span>↗</span>
-            </a>
+            <p className="meetups-eyebrow">MEETUPS</p>
+            <h2>Unheard Travel Stories.</h2>
           </div>
         </div>
+
+        {isLoading ? (
+          <div className="meetup-empty-state" role="status">
+            Loading the featured meetup…
+          </div>
+        ) : meetup ? (
+          <div className="meetup-feature">
+            <div className="meetup-image">
+              {meetup.image_url ? (
+                <img
+                  src={meetup.image_url}
+                  alt={`${meetup.title} in ${meetup.destination}`}
+                  loading="lazy"
+                />
+              ) : (
+                <div className="meetup-image-placeholder">No meetup image</div>
+              )}
+              <span className="meetup-location">{meetup.destination}</span>
+            </div>
+
+            <div className="meetup-content">
+              <div className="meetup-meta">
+                <span>UPCOMING</span>
+              </div>
+              <h3>{meetup.title}</h3>
+              <p>{meetup.description}</p>
+
+              <div className="meetup-details">
+                <div>
+                  <span>DATE</span>
+                  <strong>{formatMeetupDate(meetup.event_date)}</strong>
+                </div>
+                <div>
+                  <span>TIME</span>
+                  <strong>{meetup.event_time || "To be announced"}</strong>
+                </div>
+                <div>
+                  <span>PLACE</span>
+                  <strong>{meetup.destination}</strong>
+                </div>
+              </div>
+
+              {meetup.joining_details ? (
+                <p className="meetup-joining-details">{meetup.joining_details}</p>
+              ) : null}
+
+              <a href={joinHref} target="_blank" rel="noopener noreferrer" className="meetup-cta">
+                Join the Meetup<span>↗</span>
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="meetup-empty-state">
+            <CalendarDays aria-hidden="true" />
+            <p>No featured meetup is available right now. Check back soon.</p>
+          </div>
+        )}
       </div>
     </section>
   );
