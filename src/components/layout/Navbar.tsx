@@ -5,8 +5,9 @@ import { handleLogout } from "@/lib/auth";
 import "./Navbar.css";
 
 type NavbarProps = {
-  activePage?: "trips" | "about" | "contact";
+  activePage?: "home" | "trips" | "bookings" | "meetups" | "itineraries" | "about" | "contact";
   variant?: "overlay" | "light";
+  adminArea?: boolean;
 };
 
 type AccountState =
@@ -27,7 +28,20 @@ const navItems = [
   { href: "/contact", label: "Contact", num: "03", page: "contact" },
 ] as const;
 
-export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
+const adminNavItems = [
+  { href: "/", label: "Home", num: "01", page: "home" },
+  { href: "/admin/trips", label: "Trips", num: "02", page: "trips" },
+  { href: "/admin/bookings", label: "Bookings", num: "03", page: "bookings" },
+  { href: "/admin/meetups", label: "Meetups", num: "04", page: "meetups" },
+  {
+    href: "/admin/itineraries",
+    label: "Itinerary Submissions",
+    num: "05",
+    page: "itineraries",
+  },
+] as const;
+
+export function Navbar({ activePage, variant = "overlay", adminArea = false }: NavbarProps = {}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -155,13 +169,17 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
   };
 
   const isSignedIn = account.status === "signed-in";
-  const email = isSignedIn ? account.email : "";
   const isAdmin = isSignedIn && account.role === "admin";
   const mobileNavItems = [
-    ...navItems,
-    ...(isSignedIn ? [{ href: "/dashboard/bookings", label: "My Bookings", num: "04" }] : []),
-    ...(isAdmin ? [{ href: "/admin/trips", label: "Admin", num: "05" }] : []),
+    ...(adminArea
+      ? adminNavItems
+      : [
+          ...navItems,
+          ...(isSignedIn ? [{ href: "/dashboard/bookings", label: "My Bookings", num: "04" }] : []),
+          ...(isAdmin ? [{ href: "/admin/trips", label: "Admin", num: "05" }] : []),
+        ]),
   ];
+  const desktopNavItems = adminArea ? adminNavItems : navItems;
 
   return (
     <>
@@ -171,12 +189,12 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
         }${isScrolled ? " navbar-scrolled" : ""}`}
         aria-label="Main navigation"
       >
-        <a href="/" className="nav-brand" onClick={closeMenu}>
+        <a href={adminArea ? "/admin/trips" : "/"} className="nav-brand" onClick={closeMenu}>
           Chatpate Routes
         </a>
 
         <ul className="nav-links">
-          {navItems.map((item) => (
+          {desktopNavItems.map((item) => (
             <li key={item.href}>
               <a
                 href={item.href}
@@ -218,7 +236,7 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
                 aria-controls="desktop-account-menu"
               >
                 <span className="nav-account-indicator" aria-hidden="true" />
-                {isAdmin ? "Admin" : "Signed in"}
+                {adminArea || isAdmin ? "Admin" : "Signed in"}
                 <span className="nav-account-chevron" aria-hidden="true">
                   ⌄
                 </span>
@@ -228,22 +246,6 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
                 className="nav-account-popover"
                 hidden={!isAccountMenuOpen}
               >
-                <p className="nav-account-popover-email" title={email}>
-                  {email}
-                </p>
-                <a href="/dashboard/bookings" onClick={() => setIsAccountMenuOpen(false)}>
-                  My Bookings
-                </a>
-                {isAdmin ? (
-                  <a href="/admin/trips" onClick={() => setIsAccountMenuOpen(false)}>
-                    Admin
-                  </a>
-                ) : account.role === "checking" ? (
-                  <span className="nav-account-popover-status">Checking admin access…</span>
-                ) : null}
-                {account.role === "unavailable" ? (
-                  <span className="nav-account-popover-status">Admin access unavailable</span>
-                ) : null}
                 <button type="button" onClick={signOut} disabled={isSigningOut}>
                   {isSigningOut ? "Signing out…" : "Sign out"}
                 </button>
@@ -281,7 +283,11 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
         aria-hidden={!isMenuOpen}
       >
         <div className="mobile-menu-top">
-          <a href="/" className="mobile-menu-brand" onClick={closeMenu}>
+          <a
+            href={adminArea ? "/admin/trips" : "/"}
+            className="mobile-menu-brand"
+            onClick={closeMenu}
+          >
             Chatpate Routes
           </a>
           <button type="button" className="menu-close" onClick={closeMenu} aria-label="Close menu">
@@ -290,7 +296,7 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
           </button>
         </div>
 
-        <div className="mobile-menu-links">
+        <div className={`mobile-menu-links${adminArea ? " mobile-menu-links-admin" : ""}`}>
           {mobileNavItems.map((item) => (
             <a
               key={item.num}
@@ -304,13 +310,15 @@ export function Navbar({ activePage, variant = "overlay" }: NavbarProps = {}) {
           ))}
         </div>
 
-        <a
-          href={isSignedIn ? "/trips" : LOGIN_HREF}
-          className="mobile-menu-cta"
-          onClick={closeMenu}
-        >
-          {isSignedIn ? "BROWSE TRIPS" : "Login"}
-        </a>
+        {!adminArea ? (
+          <a
+            href={isSignedIn ? "/trips" : LOGIN_HREF}
+            className="mobile-menu-cta"
+            onClick={closeMenu}
+          >
+            {isSignedIn ? "BROWSE TRIPS" : "Login"}
+          </a>
+        ) : null}
         {isSignedIn ? (
           <button
             type="button"

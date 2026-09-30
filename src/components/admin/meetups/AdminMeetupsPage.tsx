@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link } from "@tanstack/react-router";
-import { ImagePlus, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
+import { Eye, ImagePlus, MapPin, Pencil, Plus, Trash2, X } from "lucide-react";
 import { supabase } from "@/integerations/supabase/client";
 import "./admin-meetups.css";
 
-type MeetupStatus = "draft" | "featured" | "archived";
+type MeetupStatus = "draft" | "published" | "featured" | "archived";
 
 type Meetup = {
   id: string;
@@ -55,6 +55,7 @@ export default function AdminMeetupsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [form, setForm] = useState<MeetupForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [viewingMeetup, setViewingMeetup] = useState<Meetup | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -271,20 +272,22 @@ export default function AdminMeetupsPage() {
   };
 
   const imagePreview = selectedImagePreview || form.image_url;
+  const featuredMeetup = meetups.find((meetup) => meetup.status === "featured") ?? null;
   const stats = [
     { label: "Total Meetups", value: meetups.length, tone: "total" },
     {
-      label: "Featured",
-      value: meetups.filter((meetup) => meetup.status === "featured").length,
+      label: "Featured Meetup",
+      value: featuredMeetup?.title || "None selected",
       tone: "featured",
+      isTitle: true,
     },
     {
-      label: "Drafts",
+      label: "Draft Meetups",
       value: meetups.filter((meetup) => meetup.status === "draft").length,
       tone: "draft",
     },
     {
-      label: "Archived",
+      label: "Archived Meetups",
       value: meetups.filter((meetup) => meetup.status === "archived").length,
       tone: "archived",
     },
@@ -316,9 +319,41 @@ export default function AdminMeetupsPage() {
               key={stat.label}
             >
               <span>{stat.label}</span>
-              <strong>{isLoading ? "—" : stat.value}</strong>
+              <strong className={"isTitle" in stat && stat.isTitle ? "is-title" : undefined}>
+                {isLoading ? "—" : stat.value}
+              </strong>
             </article>
           ))}
+        </section>
+
+        <section className="admin-meetup-featured-banner" aria-label="Featured meetup">
+          {featuredMeetup ? (
+            <>
+              {featuredMeetup.image_url ? (
+                <img src={featuredMeetup.image_url} alt="" />
+              ) : (
+                <span className="admin-meetup-featured-placeholder">
+                  <ImagePlus size={22} aria-hidden="true" />
+                </span>
+              )}
+              <div>
+                <span className="admin-meetup-featured-label">Currently featured</span>
+                <h2>{featuredMeetup.title}</h2>
+                <p>
+                  {featuredMeetup.destination} · {formatEventDate(featuredMeetup.event_date)}
+                  {featuredMeetup.event_time ? ` · ${featuredMeetup.event_time}` : ""}
+                </p>
+              </div>
+              <button type="button" onClick={() => setViewingMeetup(featuredMeetup)}>
+                <Eye size={16} aria-hidden="true" /> View
+              </button>
+            </>
+          ) : (
+            <div className="admin-meetup-featured-empty">
+              <span className="admin-meetup-featured-label">No featured meetup</span>
+              <p>Choose “Featured” on a meetup to display it on the public homepage.</p>
+            </div>
+          )}
         </section>
 
         {error && !isFormOpen ? (
@@ -348,6 +383,7 @@ export default function AdminMeetupsPage() {
             >
               <option value="all">All statuses</option>
               <option value="draft">Draft</option>
+              <option value="published">Published</option>
               <option value="featured">Featured</option>
               <option value="archived">Archived</option>
             </select>
@@ -365,7 +401,6 @@ export default function AdminMeetupsPage() {
                 <tr>
                   <th>Meetup</th>
                   <th>Destination</th>
-                  <th>Date</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -373,12 +408,12 @@ export default function AdminMeetupsPage() {
               <tbody>
                 {isLoading ? (
                   <tr>
-                    <td colSpan={5}>Loading meetups…</td>
+                    <td colSpan={4}>Loading meetups…</td>
                   </tr>
                 ) : null}
                 {!isLoading && filteredMeetups.length === 0 ? (
                   <tr>
-                    <td colSpan={5}>No meetups yet. Add one to feature it on the homepage.</td>
+                    <td colSpan={4}>No meetups yet. Add one to feature it on the homepage.</td>
                   </tr>
                 ) : null}
                 {filteredMeetups.map((meetup) => (
@@ -401,7 +436,6 @@ export default function AdminMeetupsPage() {
                         {meetup.destination}
                       </span>
                     </td>
-                    <td>{formatEventDate(meetup.event_date)}</td>
                     <td>
                       <select
                         className={`admin-meetup-status admin-meetup-status-${meetup.status}`}
@@ -412,12 +446,21 @@ export default function AdminMeetupsPage() {
                         aria-label={`Status for ${meetup.title}`}
                       >
                         <option value="draft">Draft</option>
+                        <option value="published">Published</option>
                         <option value="featured">Featured</option>
                         <option value="archived">Archived</option>
                       </select>
                     </td>
                     <td>
                       <div className="admin-meetup-row-actions">
+                        <button
+                          type="button"
+                          onClick={() => setViewingMeetup(meetup)}
+                          aria-label={`View ${meetup.title}`}
+                          title="View"
+                        >
+                          <Eye size={16} />
+                        </button>
                         <button
                           type="button"
                           onClick={() => openEdit(meetup)}
@@ -443,6 +486,66 @@ export default function AdminMeetupsPage() {
           </div>
         </section>
       </div>
+
+      {viewingMeetup ? (
+        <div
+          className="admin-meetup-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setViewingMeetup(null);
+          }}
+        >
+          <section
+            className="admin-meetup-modal admin-meetup-view-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="admin-meetup-view-title"
+          >
+            <header>
+              <h2 id="admin-meetup-view-title">Meetup Details</h2>
+              <button type="button" onClick={() => setViewingMeetup(null)} aria-label="Close">
+                <X size={20} />
+              </button>
+            </header>
+            {viewingMeetup.image_url ? (
+              <img className="admin-meetup-view-image" src={viewingMeetup.image_url} alt="" />
+            ) : null}
+            <div className="admin-meetup-view-details">
+              <span className={`admin-meetup-status admin-meetup-status-${viewingMeetup.status}`}>
+                {viewingMeetup.status}
+              </span>
+              <h3>{viewingMeetup.title}</h3>
+              <p className="admin-meetup-view-destination">{viewingMeetup.destination}</p>
+              <dl>
+                <div>
+                  <dt>Date</dt>
+                  <dd>{formatEventDate(viewingMeetup.event_date)}</dd>
+                </div>
+                <div>
+                  <dt>Time</dt>
+                  <dd>{viewingMeetup.event_time || "To be announced"}</dd>
+                </div>
+              </dl>
+              <p>{viewingMeetup.description}</p>
+              {viewingMeetup.joining_details ? <p>{viewingMeetup.joining_details}</p> : null}
+              {viewingMeetup.join_url ? (
+                <a href={viewingMeetup.join_url} target="_blank" rel="noreferrer">
+                  Join link
+                </a>
+              ) : null}
+              <button
+                type="button"
+                className="admin-meetups-create"
+                onClick={() => {
+                  setViewingMeetup(null);
+                  openEdit(viewingMeetup);
+                }}
+              >
+                <Pencil size={15} aria-hidden="true" /> Edit Meetup
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       {isFormOpen ? (
         <div
@@ -568,6 +671,7 @@ export default function AdminMeetupsPage() {
                   }
                 >
                   <option value="draft">Draft</option>
+                  <option value="published">Published</option>
                   <option value="featured">Featured</option>
                   <option value="archived">Archived</option>
                 </select>

@@ -343,12 +343,12 @@ html {
   display: flex;
   align-items: center;
   gap: clamp(14px, 4vw, 30px);
-  padding: 14px 0;
+  padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
-  font-size: clamp(22px, 6vw, 36px);
+  font-size: clamp(18px, 4.8vw, 28px);
   font-weight: 400;
-  letter-spacing: -1px;
+  letter-spacing: -0.6px;
   text-decoration: none;
 }
 
@@ -363,15 +363,15 @@ html {
 
 .mobile-menu-cta {
   display: flex;
-  min-height: 56px;
+  min-height: 48px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  padding: 14px 18px;
+  padding: 11px 16px;
   border-radius: 30px;
   background: #a5f2fc;
   color: #111;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.3px;
   text-align: center;
@@ -380,18 +380,18 @@ html {
 
 .mobile-menu-logout {
   display: flex;
-  min-height: 56px;
+  min-height: 48px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   margin-top: 14px;
-  padding: 14px 18px;
+  padding: 11px 16px;
   border: 0;
   border-radius: 30px;
   background: #fff;
   color: #174534;
   font: inherit;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -401,6 +401,10 @@ html {
 .mobile-menu-logout:disabled {
   cursor: wait;
   opacity: 0.7;
+}
+
+.mobile-menu-links-admin a {
+  font-size: clamp(17px, 4.4vw, 25px);
 }
 
 .nav-auth-error {

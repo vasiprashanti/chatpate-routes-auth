@@ -12,7 +12,7 @@ const updateSchema = z.object({
   image_path: z.string().trim().max(500).nullable().optional(),
   joining_details: z.string().trim().max(1000).nullable().optional(),
   join_url: z.string().url().nullable().optional(),
-  status: z.enum(["draft", "featured", "archived"]).optional(),
+  status: z.enum(["draft", "published", "featured", "archived"]).optional(),
 });
 
 export const Route = createFileRoute("/api/admin/meetups/$meetupId")({

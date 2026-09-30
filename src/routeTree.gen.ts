@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookingRouteImport } from './routes/booking'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ItineraryRouteImport } from './routes/itinerary'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -21,21 +22,27 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TripDetailRouteImport } from './routes/trip-detail'
 import { Route as TripsRouteImport } from './routes/trips'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminBookingsRouteImport } from './routes/admin.bookings'
+import { Route as AdminItinerariesRouteImport } from './routes/admin.itineraries'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminMeetupsRouteImport } from './routes/admin.meetups'
 import { Route as AdminTripsRouteImport } from './routes/admin.trips'
 import { Route as ApiBookingRouteImport } from './routes/api/booking'
 import { Route as ApiEnquiriesRouteImport } from './routes/api/enquiries'
+import { Route as ApiItinerarySubmissionsRouteImport } from './routes/api/itinerary-submissions'
 import { Route as ApiMeetupsRouteImport } from './routes/api/meetups'
 import { Route as ApiMyBookingsRouteImport } from './routes/api/my-bookings'
 import { Route as ApiTripsRouteImport } from './routes/api/trips'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as DashboardBookingsRouteImport } from './routes/dashboard.bookings'
+import { Route as ItinerarySubmitRouteImport } from './routes/itinerary.submit'
 import { Route as AdminMeetupsIndexRouteImport } from './routes/admin.meetups.index'
 import { Route as AdminTripsIndexRouteImport } from './routes/admin.trips.index'
 import { Route as AdminTripsNewRouteImport } from './routes/admin.trips.new'
 import { Route as ApiAdminBookingsRouteImport } from './routes/api/admin/bookings'
 import { Route as ApiAdminEnquiriesRouteImport } from './routes/api/admin/enquiries'
+import { Route as ApiAdminItinerarySubmissionSettingsRouteImport } from './routes/api/admin/itinerary-submission-settings'
+import { Route as ApiAdminItinerarySubmissionsRouteImport } from './routes/api/admin/itinerary-submissions'
 import { Route as ApiAdminMeetupsRouteImport } from './routes/api/admin/meetups'
 import { Route as ApiAdminTripsRouteImport } from './routes/api/admin/trips'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
@@ -43,6 +50,7 @@ import { Route as ApiTripsTripIdRouteImport } from './routes/api/trips/$tripId'
 import { Route as AdminTripsTripIdEditRouteImport } from './routes/admin.trips.$tripId.edit'
 import { Route as ApiAdminBookingsBookingIdRouteImport } from './routes/api/admin/bookings/$bookingId'
 import { Route as ApiAdminEnquiresEnquiryIdRouteImport } from './routes/api/admin/enquires/$enquiryId'
+import { Route as ApiAdminItinerarySubmissionsSubmissionIdRouteImport } from './routes/api/admin/itinerary-submissions.$submissionId'
 import { Route as ApiAdminMeetupsMeetupIdRouteImport } from './routes/api/admin/meetups.$meetupId'
 import { Route as ApiAdminMeetupsImagesRouteImport } from './routes/api/admin/meetups.images'
 import { Route as ApiAdminTripsTripIdRouteImport } from './routes/api/admin/trips/$tripId'
@@ -69,6 +77,11 @@ const BookingRoute = BookingRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ItineraryRoute = ItineraryRouteImport.update({
+  id: '/itinerary',
+  path: '/itinerary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -111,6 +124,16 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBookingsRoute = AdminBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminItinerariesRoute = AdminItinerariesRouteImport.update({
+  id: '/itineraries',
+  path: '/itineraries',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -134,6 +157,11 @@ const ApiBookingRoute = ApiBookingRouteImport.update({
 const ApiEnquiriesRoute = ApiEnquiriesRouteImport.update({
   id: '/api/enquiries',
   path: '/api/enquiries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiItinerarySubmissionsRoute = ApiItinerarySubmissionsRouteImport.update({
+  id: '/api/itinerary-submissions',
+  path: '/api/itinerary-submissions',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiMeetupsRoute = ApiMeetupsRouteImport.update({
@@ -161,6 +189,11 @@ const DashboardBookingsRoute = DashboardBookingsRouteImport.update({
   path: '/dashboard/bookings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ItinerarySubmitRoute = ItinerarySubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
+  getParentRoute: () => ItineraryRoute,
+} as any)
 const AdminMeetupsIndexRoute = AdminMeetupsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -186,6 +219,18 @@ const ApiAdminEnquiriesRoute = ApiAdminEnquiriesRouteImport.update({
   path: '/api/admin/enquiries',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminItinerarySubmissionSettingsRoute =
+  ApiAdminItinerarySubmissionSettingsRouteImport.update({
+    id: '/api/admin/itinerary-submission-settings',
+    path: '/api/admin/itinerary-submission-settings',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminItinerarySubmissionsRoute =
+  ApiAdminItinerarySubmissionsRouteImport.update({
+    id: '/api/admin/itinerary-submissions',
+    path: '/api/admin/itinerary-submissions',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiAdminMeetupsRoute = ApiAdminMeetupsRouteImport.update({
   id: '/api/admin/meetups',
   path: '/api/admin/meetups',
@@ -222,6 +267,12 @@ const ApiAdminEnquiresEnquiryIdRoute =
     id: '/api/admin/enquires/$enquiryId',
     path: '/api/admin/enquires/$enquiryId',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiAdminItinerarySubmissionsSubmissionIdRoute =
+  ApiAdminItinerarySubmissionsSubmissionIdRouteImport.update({
+    id: '/$submissionId',
+    path: '/$submissionId',
+    getParentRoute: () => ApiAdminItinerarySubmissionsRoute,
   } as any)
 const ApiAdminMeetupsMeetupIdRoute = ApiAdminMeetupsMeetupIdRouteImport.update({
   id: '/$meetupId',
@@ -266,6 +317,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/itinerary': typeof ItineraryRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -273,20 +325,26 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/trip-detail': typeof TripDetailRoute
   '/trips': typeof TripsRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/itineraries': typeof AdminItinerariesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/meetups': typeof AdminMeetupsRouteWithChildren
   '/admin/trips': typeof AdminTripsRouteWithChildren
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/itinerary-submissions': typeof ApiItinerarySubmissionsRoute
   '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/itinerary/submit': typeof ItinerarySubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/itinerary-submission-settings': typeof ApiAdminItinerarySubmissionSettingsRoute
+  '/api/admin/itinerary-submissions': typeof ApiAdminItinerarySubmissionsRouteWithChildren
   '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -296,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/itinerary-submissions/$submissionId': typeof ApiAdminItinerarySubmissionsSubmissionIdRoute
   '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
   '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
@@ -308,6 +367,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/itinerary': typeof ItineraryRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -315,18 +375,24 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/trip-detail': typeof TripDetailRoute
   '/trips': typeof TripsRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/itineraries': typeof AdminItinerariesRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/itinerary-submissions': typeof ApiItinerarySubmissionsRoute
   '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/itinerary/submit': typeof ItinerarySubmitRoute
   '/admin': typeof AdminIndexRoute
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/itinerary-submission-settings': typeof ApiAdminItinerarySubmissionSettingsRoute
+  '/api/admin/itinerary-submissions': typeof ApiAdminItinerarySubmissionsRouteWithChildren
   '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -336,6 +402,7 @@ export interface FileRoutesByTo {
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/itinerary-submissions/$submissionId': typeof ApiAdminItinerarySubmissionsSubmissionIdRoute
   '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
   '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
@@ -350,6 +417,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/booking': typeof BookingRoute
   '/contact': typeof ContactRoute
+  '/itinerary': typeof ItineraryRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -357,20 +425,26 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/trip-detail': typeof TripDetailRoute
   '/trips': typeof TripsRoute
+  '/admin/bookings': typeof AdminBookingsRoute
+  '/admin/itineraries': typeof AdminItinerariesRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/meetups': typeof AdminMeetupsRouteWithChildren
   '/admin/trips': typeof AdminTripsRouteWithChildren
   '/api/booking': typeof ApiBookingRoute
   '/api/enquiries': typeof ApiEnquiriesRoute
+  '/api/itinerary-submissions': typeof ApiItinerarySubmissionsRoute
   '/api/meetups': typeof ApiMeetupsRoute
   '/api/my-bookings': typeof ApiMyBookingsRoute
   '/api/trips': typeof ApiTripsRouteWithChildren
   '/auth/callback': typeof AuthCallbackRoute
   '/dashboard/bookings': typeof DashboardBookingsRoute
+  '/itinerary/submit': typeof ItinerarySubmitRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/trips/new': typeof AdminTripsNewRoute
   '/api/admin/bookings': typeof ApiAdminBookingsRouteWithChildren
   '/api/admin/enquiries': typeof ApiAdminEnquiriesRoute
+  '/api/admin/itinerary-submission-settings': typeof ApiAdminItinerarySubmissionSettingsRoute
+  '/api/admin/itinerary-submissions': typeof ApiAdminItinerarySubmissionsRouteWithChildren
   '/api/admin/meetups': typeof ApiAdminMeetupsRouteWithChildren
   '/api/admin/trips': typeof ApiAdminTripsRouteWithChildren
   '/api/auth/me': typeof ApiAuthMeRoute
@@ -380,6 +454,7 @@ export interface FileRoutesById {
   '/admin/trips/$tripId/edit': typeof AdminTripsTripIdEditRoute
   '/api/admin/bookings/$bookingId': typeof ApiAdminBookingsBookingIdRoute
   '/api/admin/enquires/$enquiryId': typeof ApiAdminEnquiresEnquiryIdRoute
+  '/api/admin/itinerary-submissions/$submissionId': typeof ApiAdminItinerarySubmissionsSubmissionIdRoute
   '/api/admin/meetups/$meetupId': typeof ApiAdminMeetupsMeetupIdRoute
   '/api/admin/meetups/images': typeof ApiAdminMeetupsImagesRoute
   '/api/admin/trips/$tripId': typeof ApiAdminTripsTripIdRoute
@@ -395,6 +470,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/booking'
     | '/contact'
+    | '/itinerary'
     | '/login'
     | '/privacy-policy'
     | '/reset-password'
@@ -402,20 +478,26 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trip-detail'
     | '/trips'
+    | '/admin/bookings'
+    | '/admin/itineraries'
     | '/admin/login'
     | '/admin/meetups'
     | '/admin/trips'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/itinerary-submissions'
     | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
     | '/dashboard/bookings'
+    | '/itinerary/submit'
     | '/admin/'
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/itinerary-submission-settings'
+    | '/api/admin/itinerary-submissions'
     | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
@@ -425,6 +507,7 @@ export interface FileRouteTypes {
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/itinerary-submissions/$submissionId'
     | '/api/admin/meetups/$meetupId'
     | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
@@ -437,6 +520,7 @@ export interface FileRouteTypes {
     | '/'
     | '/booking'
     | '/contact'
+    | '/itinerary'
     | '/login'
     | '/privacy-policy'
     | '/reset-password'
@@ -444,18 +528,24 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trip-detail'
     | '/trips'
+    | '/admin/bookings'
+    | '/admin/itineraries'
     | '/admin/login'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/itinerary-submissions'
     | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
     | '/dashboard/bookings'
+    | '/itinerary/submit'
     | '/admin'
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/itinerary-submission-settings'
+    | '/api/admin/itinerary-submissions'
     | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
@@ -465,6 +555,7 @@ export interface FileRouteTypes {
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/itinerary-submissions/$submissionId'
     | '/api/admin/meetups/$meetupId'
     | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
@@ -478,6 +569,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/booking'
     | '/contact'
+    | '/itinerary'
     | '/login'
     | '/privacy-policy'
     | '/reset-password'
@@ -485,20 +577,26 @@ export interface FileRouteTypes {
     | '/terms'
     | '/trip-detail'
     | '/trips'
+    | '/admin/bookings'
+    | '/admin/itineraries'
     | '/admin/login'
     | '/admin/meetups'
     | '/admin/trips'
     | '/api/booking'
     | '/api/enquiries'
+    | '/api/itinerary-submissions'
     | '/api/meetups'
     | '/api/my-bookings'
     | '/api/trips'
     | '/auth/callback'
     | '/dashboard/bookings'
+    | '/itinerary/submit'
     | '/admin/'
     | '/admin/trips/new'
     | '/api/admin/bookings'
     | '/api/admin/enquiries'
+    | '/api/admin/itinerary-submission-settings'
+    | '/api/admin/itinerary-submissions'
     | '/api/admin/meetups'
     | '/api/admin/trips'
     | '/api/auth/me'
@@ -508,6 +606,7 @@ export interface FileRouteTypes {
     | '/admin/trips/$tripId/edit'
     | '/api/admin/bookings/$bookingId'
     | '/api/admin/enquires/$enquiryId'
+    | '/api/admin/itinerary-submissions/$submissionId'
     | '/api/admin/meetups/$meetupId'
     | '/api/admin/meetups/images'
     | '/api/admin/trips/$tripId'
@@ -522,6 +621,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
+  ItineraryRoute: typeof ItineraryRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -531,6 +631,7 @@ export interface RootRouteChildren {
   TripsRoute: typeof TripsRoute
   ApiBookingRoute: typeof ApiBookingRoute
   ApiEnquiriesRoute: typeof ApiEnquiriesRoute
+  ApiItinerarySubmissionsRoute: typeof ApiItinerarySubmissionsRoute
   ApiMeetupsRoute: typeof ApiMeetupsRoute
   ApiMyBookingsRoute: typeof ApiMyBookingsRoute
   ApiTripsRoute: typeof ApiTripsRouteWithChildren
@@ -538,6 +639,8 @@ export interface RootRouteChildren {
   DashboardBookingsRoute: typeof DashboardBookingsRoute
   ApiAdminBookingsRoute: typeof ApiAdminBookingsRouteWithChildren
   ApiAdminEnquiriesRoute: typeof ApiAdminEnquiriesRoute
+  ApiAdminItinerarySubmissionSettingsRoute: typeof ApiAdminItinerarySubmissionSettingsRoute
+  ApiAdminItinerarySubmissionsRoute: typeof ApiAdminItinerarySubmissionsRouteWithChildren
   ApiAdminMeetupsRoute: typeof ApiAdminMeetupsRouteWithChildren
   ApiAdminTripsRoute: typeof ApiAdminTripsRouteWithChildren
   ApiAuthMeRoute: typeof ApiAuthMeRoute
@@ -572,6 +675,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/itinerary': {
+      id: '/itinerary'
+      path: '/itinerary'
+      fullPath: '/itinerary'
+      preLoaderRoute: typeof ItineraryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -630,6 +740,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/bookings': {
+      id: '/admin/bookings'
+      path: '/bookings'
+      fullPath: '/admin/bookings'
+      preLoaderRoute: typeof AdminBookingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/itineraries': {
+      id: '/admin/itineraries'
+      path: '/itineraries'
+      fullPath: '/admin/itineraries'
+      preLoaderRoute: typeof AdminItinerariesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
@@ -663,6 +787,13 @@ declare module '@tanstack/react-router' {
       path: '/api/enquiries'
       fullPath: '/api/enquiries'
       preLoaderRoute: typeof ApiEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/itinerary-submissions': {
+      id: '/api/itinerary-submissions'
+      path: '/api/itinerary-submissions'
+      fullPath: '/api/itinerary-submissions'
+      preLoaderRoute: typeof ApiItinerarySubmissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/meetups': {
@@ -700,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardBookingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/itinerary/submit': {
+      id: '/itinerary/submit'
+      path: '/submit'
+      fullPath: '/itinerary/submit'
+      preLoaderRoute: typeof ItinerarySubmitRouteImport
+      parentRoute: typeof ItineraryRoute
+    }
     '/admin/meetups/': {
       id: '/admin/meetups/'
       path: '/'
@@ -733,6 +871,20 @@ declare module '@tanstack/react-router' {
       path: '/api/admin/enquiries'
       fullPath: '/api/admin/enquiries'
       preLoaderRoute: typeof ApiAdminEnquiriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/itinerary-submission-settings': {
+      id: '/api/admin/itinerary-submission-settings'
+      path: '/api/admin/itinerary-submission-settings'
+      fullPath: '/api/admin/itinerary-submission-settings'
+      preLoaderRoute: typeof ApiAdminItinerarySubmissionSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/itinerary-submissions': {
+      id: '/api/admin/itinerary-submissions'
+      path: '/api/admin/itinerary-submissions'
+      fullPath: '/api/admin/itinerary-submissions'
+      preLoaderRoute: typeof ApiAdminItinerarySubmissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/meetups': {
@@ -783,6 +935,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/enquires/$enquiryId'
       preLoaderRoute: typeof ApiAdminEnquiresEnquiryIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/itinerary-submissions/$submissionId': {
+      id: '/api/admin/itinerary-submissions/$submissionId'
+      path: '/$submissionId'
+      fullPath: '/api/admin/itinerary-submissions/$submissionId'
+      preLoaderRoute: typeof ApiAdminItinerarySubmissionsSubmissionIdRouteImport
+      parentRoute: typeof ApiAdminItinerarySubmissionsRoute
     }
     '/api/admin/meetups/$meetupId': {
       id: '/api/admin/meetups/$meetupId'
@@ -865,6 +1024,8 @@ const AdminTripsRouteWithChildren = AdminTripsRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminBookingsRoute: typeof AdminBookingsRoute
+  AdminItinerariesRoute: typeof AdminItinerariesRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMeetupsRoute: typeof AdminMeetupsRouteWithChildren
   AdminTripsRoute: typeof AdminTripsRouteWithChildren
@@ -872,6 +1033,8 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBookingsRoute: AdminBookingsRoute,
+  AdminItinerariesRoute: AdminItinerariesRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMeetupsRoute: AdminMeetupsRouteWithChildren,
   AdminTripsRoute: AdminTripsRouteWithChildren,
@@ -879,6 +1042,18 @@ const AdminRouteChildren: AdminRouteChildren = {
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ItineraryRouteChildren {
+  ItinerarySubmitRoute: typeof ItinerarySubmitRoute
+}
+
+const ItineraryRouteChildren: ItineraryRouteChildren = {
+  ItinerarySubmitRoute: ItinerarySubmitRoute,
+}
+
+const ItineraryRouteWithChildren = ItineraryRoute._addFileChildren(
+  ItineraryRouteChildren,
+)
 
 interface ApiTripsTripIdImagesRouteChildren {
   ApiTripsTripIdImagesImageIdRoute: typeof ApiTripsTripIdImagesImageIdRoute
@@ -943,6 +1118,21 @@ const ApiAdminBookingsRouteChildren: ApiAdminBookingsRouteChildren = {
 const ApiAdminBookingsRouteWithChildren =
   ApiAdminBookingsRoute._addFileChildren(ApiAdminBookingsRouteChildren)
 
+interface ApiAdminItinerarySubmissionsRouteChildren {
+  ApiAdminItinerarySubmissionsSubmissionIdRoute: typeof ApiAdminItinerarySubmissionsSubmissionIdRoute
+}
+
+const ApiAdminItinerarySubmissionsRouteChildren: ApiAdminItinerarySubmissionsRouteChildren =
+  {
+    ApiAdminItinerarySubmissionsSubmissionIdRoute:
+      ApiAdminItinerarySubmissionsSubmissionIdRoute,
+  }
+
+const ApiAdminItinerarySubmissionsRouteWithChildren =
+  ApiAdminItinerarySubmissionsRoute._addFileChildren(
+    ApiAdminItinerarySubmissionsRouteChildren,
+  )
+
 interface ApiAdminMeetupsRouteChildren {
   ApiAdminMeetupsMeetupIdRoute: typeof ApiAdminMeetupsMeetupIdRoute
   ApiAdminMeetupsImagesRoute: typeof ApiAdminMeetupsImagesRoute
@@ -974,6 +1164,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
+  ItineraryRoute: ItineraryRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -983,6 +1174,7 @@ const rootRouteChildren: RootRouteChildren = {
   TripsRoute: TripsRoute,
   ApiBookingRoute: ApiBookingRoute,
   ApiEnquiriesRoute: ApiEnquiriesRoute,
+  ApiItinerarySubmissionsRoute: ApiItinerarySubmissionsRoute,
   ApiMeetupsRoute: ApiMeetupsRoute,
   ApiMyBookingsRoute: ApiMyBookingsRoute,
   ApiTripsRoute: ApiTripsRouteWithChildren,
@@ -990,6 +1182,10 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardBookingsRoute: DashboardBookingsRoute,
   ApiAdminBookingsRoute: ApiAdminBookingsRouteWithChildren,
   ApiAdminEnquiriesRoute: ApiAdminEnquiriesRoute,
+  ApiAdminItinerarySubmissionSettingsRoute:
+    ApiAdminItinerarySubmissionSettingsRoute,
+  ApiAdminItinerarySubmissionsRoute:
+    ApiAdminItinerarySubmissionsRouteWithChildren,
   ApiAdminMeetupsRoute: ApiAdminMeetupsRouteWithChildren,
   ApiAdminTripsRoute: ApiAdminTripsRouteWithChildren,
   ApiAuthMeRoute: ApiAuthMeRoute,

@@ -207,6 +207,55 @@ export default function AdminTripEditor({
   const [cancellationPolicy, setCancellationPolicy] = useState("");
 
 useEffect(() => {
+  if (tripId !== "new") return;
+
+  const rawDraft = sessionStorage.getItem("chatpate-itinerary-trip-draft");
+  if (!rawDraft) return;
+
+  try {
+    const draft = JSON.parse(rawDraft) as {
+      title?: string;
+      destination?: string;
+      starting_location?: string;
+      duration?: string;
+      estimated_budget?: number | null;
+      travel_months?: string[];
+      itinerary_details?: string;
+      additional_notes?: string;
+      submitter_name?: string;
+      id?: string;
+    };
+    setTripName(draft.title ?? "");
+    setDestination(draft.destination ?? "");
+    setPickupPoint(draft.starting_location ?? "");
+    setDuration(draft.duration?.match(/\d+/)?.[0] ?? "");
+    setPrice(draft.estimated_budget == null ? "" : String(draft.estimated_budget));
+    setShortDescription(
+      `Community itinerary submitted by ${draft.submitter_name || "a traveller"}. Complete the trip details before publishing.`,
+    );
+    const routeDetails = [
+      draft.itinerary_details,
+      draft.additional_notes ? `Additional notes: ${draft.additional_notes}` : "",
+      draft.travel_months?.length ? `Suggested travel months: ${draft.travel_months.join(", ")}` : "",
+      draft.id ? `Source itinerary submission: ${draft.id}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+    setDetailedDescription(routeDetails);
+    setItinerary([
+      {
+        day: 1,
+        title: "Suggested route (review and complete)",
+        description: draft.itinerary_details ?? "",
+      },
+    ]);
+    sessionStorage.removeItem("chatpate-itinerary-trip-draft");
+  } catch {
+    sessionStorage.removeItem("chatpate-itinerary-trip-draft");
+  }
+}, [tripId]);
+
+useEffect(() => {
   if (tripId === "new") return;
 
   const loadTrip = async () => {

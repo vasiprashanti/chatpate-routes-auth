@@ -12,7 +12,7 @@ const meetupSchema = z.object({
   image_path: z.string().trim().max(500).nullable().optional(),
   joining_details: z.string().trim().max(1000).nullable().optional(),
   join_url: z.string().url().nullable().optional(),
-  status: z.enum(["draft", "featured", "archived"]).default("draft"),
+  status: z.enum(["draft", "published", "featured", "archived"]).default("draft"),
 });
 
 export const Route = createFileRoute("/api/admin/meetups")({
@@ -69,13 +69,13 @@ export const Route = createFileRoute("/api/admin/meetups")({
             });
             if (featureError) throw featureError;
             meetup.status = "featured";
-          } else if (requestedStatus === "archived") {
+          } else if (requestedStatus !== "draft") {
             const { error: statusError } = await admin.supabase
               .from("meetups")
-              .update({ status: "archived" })
+              .update({ status: requestedStatus })
               .eq("id", meetup.id);
             if (statusError) throw statusError;
-            meetup.status = "archived";
+            meetup.status = requestedStatus;
           }
 
           return Response.json({ success: true, meetup }, { status: 201 });

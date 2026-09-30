@@ -585,12 +585,7 @@ export function ItinerarySection() {
 
         <h2>Got a route, hidden gem or weekend plan worth sharing?</h2>
 
-        <a
-          href="https://wa.me/919266770149?text=Hey!%20I%20have%20a%20route%20I%E2%80%99d%20love%20to%20share%20with%20Chatpate%20Routes."
-          target="_blank"
-          rel="noopener noreferrer"
-          className="itinerary-btn"
-        >
+        <a href="/itinerary" className="itinerary-btn">
           Submit Your Itinerary
           <span>↗</span>
         </a>
