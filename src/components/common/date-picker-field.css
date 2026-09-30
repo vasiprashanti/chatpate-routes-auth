@@ -25,24 +25,21 @@
   border-radius: 4px;
 }
 
-.date-picker-field .date-picker-text {
+.date-picker-display {
+  display: block;
   width: 100%;
   min-width: 0;
   height: 26px;
   padding: 0 42px 0 0;
-  border: 0;
-  border-radius: 0;
-  outline: 0;
-  background: transparent;
-  color: #151a18;
+  color: #88938e;
   font: inherit;
   font-size: 14px;
   line-height: 1.4;
+  pointer-events: none;
 }
 
-.date-picker-field .date-picker-text::placeholder {
-  color: #88938e;
-  opacity: 1;
+.date-picker-display.selected {
+  color: #151a18;
 }
 
 .date-picker-icon {
@@ -58,14 +55,14 @@
   stroke-linejoin: round;
   stroke-width: 1.6;
   pointer-events: none;
+  z-index: 1;
 }
 
 .date-picker-native {
   position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  width: 40px;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
   height: 100%;
   padding: 0;
   border: 0;
@@ -99,13 +96,14 @@
   border: 0;
 }
 
-.date-picker-field--compact .date-picker-text {
+.date-picker-field--compact .date-picker-display {
   height: 34px;
   padding: 0 34px 0 12px;
   border: 1px solid var(--trips-line, #e5e5e2);
   border-radius: 30px;
   background: #fff;
   font-size: 11px;
+  line-height: 32px;
 }
 
 .date-picker-field--compact .date-picker-icon {
@@ -115,18 +113,18 @@
 }
 
 .date-picker-field--compact .date-picker-native {
-  width: 34px;
   height: 34px;
+  border-radius: 30px;
 }
 
 @media (max-width: 650px) {
-  .date-picker-field--compact .date-picker-text,
+  .date-picker-field--compact .date-picker-display,
   .date-picker-field--compact .date-picker-native {
     height: 42px;
   }
 
-  .date-picker-field--compact .date-picker-native {
-    width: 42px;
+  .date-picker-field--compact .date-picker-display {
+    line-height: 40px;
   }
 
   .date-picker-field--hero {

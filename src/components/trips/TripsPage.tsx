@@ -8,6 +8,7 @@ import "./trips.css";
 import { Link } from "@tanstack/react-router";
 import { useCurrentTripDate } from "@/hooks/use-current-trip-date";
 import { isPastTrip, isUpcomingTrip } from "@/lib/trip-dates";
+import { filterTripsByDateOrMonth } from "@/lib/trip-search";
 
 type Filter = "all" | "upcoming" | "past" | "weekend" | "backpacking" | "popular";
 type Month = "all" | "september" | "october" | "november" | "december";
@@ -84,19 +85,6 @@ function getMonth(date?: string | null): Month {
   return monthMap[month] ?? "all";
 }
 
-function tripIncludesDate(trip: Trip, date: string) {
-  if (!date) return true;
-  if (!trip.startDate) return false;
-
-  const selected = new Date(`${date}T00:00:00`);
-  const start = new Date(`${trip.startDate}T00:00:00`);
-  const end = trip.endDate
-    ? new Date(`${trip.endDate}T00:00:00`)
-    : start;
-
-  return selected >= start && selected <= end;
-}
-
 function formatPrice(price?: number | null) {
   if (price == null) return "Price on request";
 
@@ -123,9 +111,7 @@ function backendTripToTrip(trip: BackendTrip): Trip {
     image: trip.cover_image_url || tripHero,
     alt: trip.title,
     categories: trip.trip_type ? [trip.trip_type.toLowerCase()] : [],
-    search: `${trip.title} ${trip.destination || ""} ${
-      trip.trip_type || ""
-    }`.toLowerCase(),
+    search: `${trip.title} ${trip.destination || ""}`.toLowerCase(),
     href: `/trips/${trip.slug}`,
     startDate: trip.start_date ?? null,
     endDate: trip.end_date ?? null,
@@ -272,36 +258,29 @@ export function TripsPage() {
     return () => document.removeEventListener("click", handleOutside);
   }, []);
 
-  const visibleTrips = useMemo(() => {
-  const query = search.trim().toLowerCase();
+  const { trips: visibleTrips, usedMonthFallback } = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const tripsMatchingOtherFilters = trips.filter((trip) => {
+      const matchesFilter =
+        filter === "all"
+          ? true
+          : filter === "upcoming"
+            ? isUpcomingTrip(trip.startDate, trip.endDate, today)
+            : filter === "past"
+              ? isPastTrip(trip.endDate, today)
+              : trip.categories.includes(filter);
 
-  return trips.filter((trip) => {
-    const matchesFilter =
-      filter === "all"
-        ? true
-        : filter === "upcoming"
-          ? isUpcomingTrip(trip.startDate, trip.endDate, today)
-          : filter === "past"
-            ? isPastTrip(trip.endDate, today)
-            : trip.categories.includes(filter);
+      // A selected date determines its own month; don't let a stale month
+      // filter hide the exact-date or same-month fallback results.
+      const matchesMonth =
+        Boolean(selectedDate) || month === "all" || trip.month === month;
+      const matchesSearch = !query || trip.search.toLowerCase().includes(query);
 
-    const matchesMonth =
-      month === "all" || trip.month === month;
+      return matchesFilter && matchesMonth && matchesSearch;
+    });
 
-    const matchesSearch =
-      !query || trip.search.toLowerCase().includes(query);
-
-    const matchesDate =
-      !selectedDate || tripIncludesDate(trip, selectedDate);
-
-    return (
-      matchesFilter &&
-      matchesMonth &&
-      matchesSearch &&
-      matchesDate
-    );
-  });
-}, [trips, search, filter, month, selectedDate, today]);
+    return filterTripsByDateOrMonth(tripsMatchingOtherFilters, selectedDate, today);
+  }, [trips, search, filter, month, selectedDate, today]);
 
   const clearFilters = () => {
   setSearch("");
@@ -360,8 +339,9 @@ export function TripsPage() {
               className="date-picker-field--compact"
               onChange={(nextDate) => {
                 setSelectedDate(nextDate);
+                setMonth("all");
                 void navigate({
-                  search: (previous) => ({ ...previous, date: nextDate }),
+                  search: (previous) => ({ ...previous, month: "", date: nextDate }),
                   replace: true,
                 });
               }}
@@ -403,10 +383,12 @@ export function TripsPage() {
                   onClick={() => {
                     setMonth(option.value);
                     setMonthOpen(false);
+                    setSelectedDate("");
                     void navigate({
                       search: (previous) => ({
                         ...previous,
                         month: option.value === "all" ? "" : option.value,
+                        date: "",
                       }),
                       replace: true,
                     });
@@ -430,6 +412,23 @@ export function TripsPage() {
               <p>{error}</p>
             </div>
           ) : (
+            <>
+            {usedMonthFallback && selectedDate && visibleTrips.length > 0 ? (
+              <p className="trips-date-fallback-note" role="status">
+                No trips include{" "}
+                {new Date(`${selectedDate}T12:00:00`).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+                . Showing available trips for{" "}
+                {new Date(`${selectedDate}T12:00:00`).toLocaleDateString("en-IN", {
+                  month: "long",
+                  year: "numeric",
+                })}{" "}
+                instead.
+              </p>
+            ) : null}
             <div className="trips-trip-grid">
               {visibleTrips.map((trip, index) => (
                 <TripCard
@@ -439,16 +438,19 @@ export function TripsPage() {
                 />
               ))}
             </div>
+            </>
           )}
 
           {!isLoading && !error && visibleTrips.length === 0 && (
             <div className="trips-empty-state">
               <h3>
-                {filter === "upcoming"
-                  ? "No upcoming trips found."
-                  : filter === "past"
-                    ? "No past trips found."
-                    : "No trips found."}
+                {usedMonthFallback
+                  ? "No available trips in that month."
+                  : filter === "upcoming"
+                    ? "No upcoming trips found."
+                    : filter === "past"
+                      ? "No past trips found."
+                      : "No trips found."}
               </h3>
               <p>Try another destination or clear your filters.</p>
               <button type="button" onClick={clearFilters}>Clear Filters</button>

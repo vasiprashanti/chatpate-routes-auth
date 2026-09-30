@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { useCurrentTripDate } from "@/hooks/use-current-trip-date";
 
 export interface BookingDraft {
   trip?: string;
@@ -10,12 +11,13 @@ interface BookingModalProps {
   onClose: () => void;
 }
 
-interface BookingResponse {
+interface EnquiryResponse {
   success?: boolean;
   message?: string;
 }
 
 export function BookingModal({ draft, onClose }: BookingModalProps) {
+  const today = useCurrentTripDate();
   const [values, setValues] = useState({
     name: "",
     email: "",
@@ -25,7 +27,6 @@ export function BookingModal({ draft, onClose }: BookingModalProps) {
     travellers: "1",
     message: "",
   });
-  const [bookingId] = useState(() => crypto.randomUUID());
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
@@ -52,29 +53,39 @@ export function BookingModal({ draft, onClose }: BookingModalProps) {
     setStatus(null);
 
     try {
-      const response = await fetch("/api/booking", {
+      const requestMessage = [
+        `Trip or destination: ${values.trip.trim()}`,
+        `Preferred date: ${values.travelDate || "Flexible"}`,
+        `Travellers: ${values.travellers}`,
+        values.message.trim() ? `Additional details: ${values.message.trim()}` : "",
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const response = await fetch("/api/enquiries", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          bookingId,
-          ...values,
-          travellers: Number(values.travellers),
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          message: requestMessage,
         }),
       });
-      const payload = (await response.json().catch(() => null)) as BookingResponse | null;
+      const payload = (await response.json().catch(() => null)) as EnquiryResponse | null;
 
       if (!response.ok || !payload?.success) {
-        throw new Error(payload?.message ?? "We could not save your booking. Please try again.");
+        throw new Error(payload?.message ?? "We could not send your trip request. Please try again.");
       }
 
       setStatus({
         type: "success",
-        message: payload.message ?? "Your booking request has been received.",
+        message: "Your trip request has been received. We’ll be in touch soon.",
       });
     } catch (error) {
       setStatus({
         type: "error",
-        message: error instanceof Error ? error.message : "We could not save your booking.",
+        message: error instanceof Error ? error.message : "We could not send your trip request.",
       });
     } finally {
       setSubmitting(false);
@@ -151,12 +162,14 @@ export function BookingModal({ draft, onClose }: BookingModalProps) {
             />
           </label>
           <label className="booking-field">
-            <span>Preferred date</span>
+            <span>
+              Preferred date <em>Optional</em>
+            </span>
             <input
               type="date"
+              min={today}
               value={values.travelDate}
               onChange={(event) => update("travelDate", event.target.value)}
-              required
             />
           </label>
           <label className="booking-field booking-field-full">
@@ -180,7 +193,7 @@ export function BookingModal({ draft, onClose }: BookingModalProps) {
           ) : null}
 
           <button className="booking-submit" type="submit" disabled={submitting}>
-            {submitting ? "Sending…" : "Send Booking Request"}
+            {submitting ? "Sending…" : "Send Trip Request"}
           </button>
         </form>
       </section>

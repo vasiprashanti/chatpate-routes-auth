@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { CalendarDays } from "lucide-react";
 import { DatePickerField } from "@/components/common/DatePickerField";
+import { useCurrentTripDate } from "@/hooks/use-current-trip-date";
+import { filterTripsByDateOrMonth, matchesTripDestination } from "@/lib/trip-search";
 import { homeImages } from "./images";
 
 type BackendTrip = {
@@ -17,16 +19,15 @@ type BackendTrip = {
 export function HeroSection({
   onFindTrip,
 }: {
-  onFindTrip: (destination: string, travelDate: string, selectedTrip?: BackendTrip) => void;
+  onFindTrip: (destination: string, travelDate: string) => void;
 }) {
   const [destination, setDestination] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [highlightedSuggestion, setHighlightedSuggestion] = useState(-1);
-  const [selectedTrip, setSelectedTrip] = useState<BackendTrip | null>(null);
+  const today = useCurrentTripDate();
 
   const [backendTrips, setBackendTrips] = useState<BackendTrip[]>([]);
-  const [tripsLoading, setTripsLoading] = useState(true);
 
   useEffect(() => {
     const loadTrips = async () => {
@@ -44,8 +45,6 @@ export function HeroSection({
         }
       } catch (error) {
         console.error("Failed to load trips:", error);
-      } finally {
-        setTripsLoading(false);
       }
     };
 
@@ -57,21 +56,23 @@ export function HeroSection({
 
     if (!query) return [];
 
-    return backendTrips.filter((trip) => {
-      const matchesDestination = `${trip.title} ${trip.destination}`.toLowerCase().includes(query);
-      const startDate = trip.start_date?.slice(0, 10) ?? "";
-      const endDate = trip.end_date?.slice(0, 10) || startDate;
-      const matchesDate =
-        !travelDate ||
-        Boolean(startDate && endDate && travelDate >= startDate && travelDate <= endDate);
+    const destinationTrips = backendTrips.filter((trip) =>
+      matchesTripDestination(trip, query),
+    );
 
-      return matchesDestination && matchesDate;
-    });
-  }, [destination, backendTrips, travelDate]);
+    return filterTripsByDateOrMonth(
+      destinationTrips.map((trip) => ({
+        ...trip,
+        startDate: trip.start_date,
+        endDate: trip.end_date,
+      })),
+      travelDate,
+      today,
+    ).trips;
+  }, [destination, backendTrips, travelDate, today]);
 
   const selectSuggestion = (trip: BackendTrip) => {
     setDestination(trip.title);
-    setSelectedTrip(trip);
     setSuggestionsOpen(false);
     setHighlightedSuggestion(-1);
   };
@@ -112,7 +113,7 @@ export function HeroSection({
       return;
     }
 
-    onFindTrip(trimmedDestination, travelDate, selectedTrip ?? undefined);
+    onFindTrip(trimmedDestination, travelDate);
   };
 
   return (
@@ -152,7 +153,6 @@ export function HeroSection({
               }}
               onChange={(event) => {
                 setDestination(event.target.value);
-                setSelectedTrip(null);
                 setSuggestionsOpen(true);
                 setHighlightedSuggestion(-1);
               }}

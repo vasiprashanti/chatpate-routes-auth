@@ -131,6 +131,7 @@
 .trips-trip-actions .trips-trip-bottom { padding-top:0; margin-bottom:12px; border-top:0; }
 .trips-card-book-btn { min-height:44px; display:flex; align-items:center; justify-content:center; gap:8px; padding:0 16px; border-radius:10px; background:#087da5; color:#fff !important; text-decoration:none; font-size:13px; font-weight:700; transition:background .2s ease,transform .2s ease; }
 .trips-card-book-btn:hover { background:#066987; transform:translateY(-1px); }
+.trips-date-fallback-note { margin:28px 0 -30px; color:var(--trips-muted); font-size:13px; line-height:1.5; }
 
 .trips-empty-state { display:block; padding:80px 20px; text-align:center; border:1px dashed var(--trips-line); border-radius:18px; background:#fafaf8; margin-top:55px; }
 .trips-empty-state h3 { margin:0 0 8px; font-size:25px; font-weight:500; letter-spacing:-.8px; }

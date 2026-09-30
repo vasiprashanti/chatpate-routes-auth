@@ -13,6 +13,8 @@ import {
   SiteFooter,
 } from "@/components/home/HomeSections";
 import { UpcomingTrips } from "@/components/home/UpcomingTrips";
+import { getCurrentTripDate } from "@/lib/trip-dates";
+import { filterTripsByDateOrMonth, matchesTripDestination } from "@/lib/trip-search";
 
 type SearchTrip = {
   id: string;
@@ -65,7 +67,11 @@ function HomePage() {
 
   <main>
     <HeroSection
-      onFindTrip={async (destination, travelDate, selectedTrip) => {
+      onFindTrip={async (destination, travelDate) => {
+        const trimmedDestination = destination.trim();
+
+        if (!trimmedDestination && !travelDate) return;
+
         if (!destination.trim() && travelDate) {
           navigate({
             to: "/trips",
@@ -88,87 +94,39 @@ function HomePage() {
           }
 
           const allTrips = result.trips as SearchTrip[];
+          const destinationTrips = allTrips.filter((trip) =>
+            matchesTripDestination(trip, trimmedDestination),
+          );
 
-          const normalizedDestination = destination.trim().toLowerCase();
-
-          // Find a trip where the destination matches
-          // and the selected date falls within the trip dates.
-          const selectedTripMatch = selectedTrip
-            ? allTrips.find((trip) => {
-                if (trip.id !== selectedTrip.id) return false;
-                if (!travelDate) return true;
-
-                const startDate = trip.start_date?.slice(0, 10) ?? "";
-                const endDate = trip.end_date?.slice(0, 10) || startDate;
-                return Boolean(
-                  startDate &&
-                    endDate &&
-                    travelDate >= startDate &&
-                    travelDate <= endDate,
-                );
-              })
-            : null;
-
-          const matchedTrip = selectedTripMatch || allTrips.find((trip) => {
-            const tripDestination = (
-              trip.destination || trip.title || ""
-            ).trim().toLowerCase();
-
-            const destinationMatches =
-              tripDestination.includes(normalizedDestination) ||
-              trip.title?.trim().toLowerCase().includes(normalizedDestination);
-
-            const dateMatches =
-              !travelDate ||
-              Boolean(
-                trip.start_date &&
-                  travelDate >= trip.start_date.slice(0, 10) &&
-                  travelDate <= (trip.end_date || trip.start_date).slice(0, 10),
-              );
-
-            return destinationMatches && dateMatches;
-          }) || (!travelDate ? allTrips.find((trip) => {
-            const tripDestination = (
-              trip.destination || trip.title || ""
-            ).trim().toLowerCase();
-
-            return (
-              tripDestination.includes(normalizedDestination) ||
-              trip.title?.trim().toLowerCase().includes(normalizedDestination)
-            );
-          }) : null);
-
-          if (matchedTrip) {
-            navigate({
-              to: "/trip-detail",
-              search: {
-                trip: matchedTrip.id,
-              },
-            });
-
-            return;
-          }
-
-          if (travelDate) {
-            navigate({
-              to: "/trips",
-              search: { month: "", date: travelDate, q: destination.trim() },
-            });
-            return;
-          }
-
-          // No exact destination + date match yet.
-          // We will add the recommendation flow next.
-          setBookingDraft({
-            trip: destination,
+          const dateFilteredDestinationTrips = filterTripsByDateOrMonth(
+            destinationTrips.map((trip) => ({
+              ...trip,
+              startDate: trip.start_date ?? null,
+              endDate: trip.end_date ?? null,
+            })),
             travelDate,
+            getCurrentTripDate(),
+          ).trips;
+
+          if (
+            trimmedDestination &&
+            (destinationTrips.length === 0 ||
+              (travelDate && dateFilteredDestinationTrips.length === 0))
+          ) {
+            setBookingDraft({ trip: trimmedDestination, travelDate });
+            return;
+          }
+
+          navigate({
+            to: "/trips",
+            search: { month: "", date: travelDate, q: trimmedDestination },
           });
         } catch (error) {
           console.error("Failed to find trip:", error);
 
-          setBookingDraft({
-            trip: destination,
-            travelDate,
+          navigate({
+            to: "/trips",
+            search: { month: "", date: travelDate, q: trimmedDestination },
           });
         }
       }}
